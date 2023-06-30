@@ -1,8 +1,19 @@
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
+    }
+    plugins{
+        id 'androidx.navigation'
+        id 'org.jetbrains.kotlin.android' version '1.6.21'
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'androidx.navigation') {
+                useModule("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2")
+            }
+        }
     }
 }
 dependencyResolutionManagement {
