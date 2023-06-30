@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentHomeBinding
@@ -17,6 +20,7 @@ class HomeFragment : Fragment() {
 
     private var binding: FragmentHomeBinding? = null
     private val viewModel: HomeViewModel by viewModel()
+    private var auth: FirebaseAuth? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,8 +32,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).setColorStatusBar(R.color.white)
+        auth = Firebase.auth
+        onClick()
         initListOrder()
         initListProduct()
+    }
+
+    private fun onClick() {
+        binding?.includeAdmin?.imageProfile?.setOnClickListener {
+            auth?.signOut()
+        }
     }
 
     private fun initListOrder() {
