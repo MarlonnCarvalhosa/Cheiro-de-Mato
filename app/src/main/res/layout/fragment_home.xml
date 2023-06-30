@@ -29,7 +29,7 @@
 
         <include
             android:id="@+id/includeSeller"
-            layout="@layout/item_home_admin"
+            layout="@layout/item_home_seller"
             android:visibility="invisible"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "972017701111",
+    "project_id": "cheiro-de-mato-a53ab",
+    "storage_bucket": "cheiro-de-mato-a53ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972017701111:android:e58ebf6437840e68c143f2",
+        "android_client_info": {
+          "package_name": "com.marlonncarvalhosa.cheirodemato"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "972017701111-f958176de46lgef6atenm9u49vnu3foe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.marlonncarvalhosa.cheirodemato",
+            "certificate_hash": "973136009df8ba84700f8ef1f6d795ca24bebe4e"
+          }
+        },
+        {
+          "client_id": "972017701111-7uqdruli62jndj9fil5tm27msgagk95j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJCGik7VJLvXQWX9beI4I9XBP0_BYoQq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "972017701111-7uqdruli62jndj9fil5tm27msgagk95j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
