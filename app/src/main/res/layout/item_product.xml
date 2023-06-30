@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="12dp"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="16dp"
+    android:id="@+id/card"
+    app:cardBackgroundColor="@color/light_grey">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="16dp"
+            android:src="@drawable/logo"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize8Percent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_product_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppins_bold"
+            android:includeFontPadding="false"
+            android:text="Milho Disponível"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/icon"
+            app:layout_constraintTop_toTopOf="@+id/icon" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="6dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_button_radius_10"
+            android:backgroundTint="#81768F32"
+            app:layout_constraintStart_toStartOf="@+id/text_product_name"
+            app:layout_constraintTop_toBottomOf="@+id/text_product_name" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_layout_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:includeFontPadding="false"
+            android:text="Quantidade:"
+            android:textSize="11sp"
+            app:fontFamily="@font/poppins"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"
+            app:layout_constraintStart_toEndOf="@+id/view1"
+            app:layout_constraintTop_toTopOf="@+id/view1"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="300"
+            android:layout_marginStart="6dp"
+            android:textSize="11sp"
+            app:fontFamily="@font/poppins"
+            app:layout_constraintBottom_toBottomOf="@+id/view1"
+            app:layout_constraintStart_toEndOf="@+id/text_layout_amount"
+            app:layout_constraintTop_toTopOf="@+id/view1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

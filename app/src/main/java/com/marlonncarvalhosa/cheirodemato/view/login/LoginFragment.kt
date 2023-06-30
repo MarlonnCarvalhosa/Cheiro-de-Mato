@@ -5,12 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.marlonncarvalhosa.cheirodemato.util.Constants
-import com.marlonncarvalhosa.cheirodemato.util.MaskEditUtil
 import com.marlonncarvalhosa.cheirodemato.util.openActivity
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentLoginBinding
-import com.marlonncarvalhosa.cheirodemato.view.MainActivity
+import com.marlonncarvalhosa.cheirodemato.view.main.MainActivity
 import com.marlonncarvalhosa.cheirodemato.view.init.InitActivity
 
 class LoginFragment : Fragment() {

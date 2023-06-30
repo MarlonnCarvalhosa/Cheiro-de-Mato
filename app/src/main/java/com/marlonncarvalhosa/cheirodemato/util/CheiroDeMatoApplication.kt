@@ -3,6 +3,7 @@ package com.marlonncarvalhosa.cheirodemato.util
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.marlonncarvalhosa.cheirodemato.di.listModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -12,7 +13,7 @@ class CheiroDeMatoApplication: Application() {
         instance = applicationContext
         startKoin{
             androidContext(this@CheiroDeMatoApplication)
-            //modules(listModules)
+            modules(listModules)
         }
     }
 
