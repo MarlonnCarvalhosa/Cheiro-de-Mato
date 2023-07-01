@@ -6,4 +6,5 @@
 
     <string name="error_invalid_email">E-mail inválido.</string>
     <string name="error_empty_password">Senha inválido.</string>
+    <string name="text_products">Produtos</string>
 </resources>

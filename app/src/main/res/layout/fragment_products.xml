@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.1"
+            android:text="@string/text_products"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_back" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_search_layout"
+            style="@style/TextInputLayoutStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="46dp"
+            android:layout_marginEnd="20dp"
+            android:hint="O que você procura?"
+            app:boxStrokeColor="@color/light_grey"
+            app:boxStrokeWidth="0dp"
+            app:endIconDrawable="@drawable/ic_search"
+            app:endIconMode="custom"
+            app:endIconTint="@color/grey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/btn_back"
+            app:layout_constraintTop_toBottomOf="@+id/text_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionSearch"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.tsuryo.swipeablerv.SwipeableRecyclerView
+            android:id="@+id/recycler_products"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            android:layout_marginTop="26dp"
+            app:leftBgColor="@color/blue"
+            app:leftImage="@drawable/baseline_edit_24"
+            app:rightBgColor="@color/red"
+            app:rightImage="@drawable/baseline_delete_sweep_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_search_layout" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="22dp"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/main_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

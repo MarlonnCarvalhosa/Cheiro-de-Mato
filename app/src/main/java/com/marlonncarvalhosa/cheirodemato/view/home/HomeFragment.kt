@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -67,6 +68,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun onClick() {
+        binding?.includeAdmin?.textSeeMoreProducts?.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToProductsFragment())
+        }
         binding?.includeAdmin?.imageProfile?.setOnClickListener {
             auth?.signOut()
         }

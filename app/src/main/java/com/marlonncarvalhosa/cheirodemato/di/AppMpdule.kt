@@ -8,6 +8,7 @@ import com.marlonncarvalhosa.cheirodemato.data.repository.datasourceimpl.LoginRe
 import com.marlonncarvalhosa.cheirodemato.usecase.LoginUseCase
 import com.marlonncarvalhosa.cheirodemato.view.home.HomeViewModel
 import com.marlonncarvalhosa.cheirodemato.view.login.LoginViewModel
+import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -17,6 +18,9 @@ val viewModelModule = module{
     }
     viewModel {
         HomeViewModel()
+    }
+    viewModel {
+        ProductViewModel()
     }
 }
 
