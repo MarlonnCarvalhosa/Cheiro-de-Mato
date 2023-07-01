@@ -48,7 +48,7 @@
             android:layout_height="14dp"
             android:layout_marginTop="4dp"
             android:background="@drawable/bg_button_radius_10"
-            android:backgroundTint="#81768F32"
+            android:backgroundTint="@color/status_green"
             app:layout_constraintStart_toStartOf="@+id/text_id"
             app:layout_constraintTop_toBottomOf="@+id/text_id" />
 

@@ -1,8 +1,11 @@
 package com.marlonncarvalhosa.cheirodemato.view.home
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemOrderBinding
 
@@ -30,6 +33,9 @@ class OrdersAdapter(
 
     override fun onBindViewHolder(holder: OrdersAdapter.ViewHolder, position: Int) {
         holder.bind(data[position])
+        if (data[position].status == "Aguardando") {
+            holder.itemView.findViewById<View>(R.id.view2).backgroundTintList = ContextCompat.getColorStateList(holder.itemView.context, R.color.status_yellow)
+        }
     }
 
     override fun getItemCount(): Int = data.size

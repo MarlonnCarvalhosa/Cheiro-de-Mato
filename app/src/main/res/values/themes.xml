@@ -34,10 +34,10 @@
     <style name="TextInputLayoutStyleDrop" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">>
         <item name="boxBackgroundColor">@color/light_grey</item>
         <item name="boxStrokeColor">@color/light_grey</item>
-        <item name="boxCornerRadiusBottomEnd">6dp</item>
-        <item name="boxCornerRadiusBottomStart">6dp</item>
-        <item name="boxCornerRadiusTopEnd">6dp</item>
-        <item name="boxCornerRadiusTopStart">6dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
     </style>
 
 
