@@ -48,4 +48,8 @@ object Constants {
     const val PRICE = "PRICE"
     const val CREDIT = "CREDIT"
 
+    // Collections
+    const val ORDERS = "orders"
+    const val PRODUCTS = "products"
+
 }

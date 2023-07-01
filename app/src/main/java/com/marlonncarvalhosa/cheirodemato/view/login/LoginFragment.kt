@@ -2,6 +2,7 @@ package com.marlonncarvalhosa.cheirodemato.view.login
 
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
@@ -21,10 +23,12 @@ import com.marlonncarvalhosa.cheirodemato.databinding.FragmentLoginBinding
 import com.marlonncarvalhosa.cheirodemato.util.*
 import com.marlonncarvalhosa.cheirodemato.view.main.MainActivity
 import com.marlonncarvalhosa.cheirodemato.view.init.InitActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment() {
 
     private var binding: FragmentLoginBinding? = null
+    private val viewModel: LoginViewModel by viewModel()
     private var auth: FirebaseAuth? = null
 
     override fun onCreateView(
@@ -65,7 +69,28 @@ class LoginFragment : Fragment() {
 
         if (binding?.editEmail?.error.isNullOrEmpty() && binding?.editPassword?.error.isNullOrEmpty()){
             login(LoginModel(email, password))
-            showProgress()
+//            viewModel.login(LoginModel(email, password))
+//            observer()
+        }
+    }
+
+    private fun observer() {
+        lifecycleScope.launchWhenCreated {
+            viewModel._resultLiveData.collect {
+                when (it) {
+                    is Loading -> {
+                        showProgress()
+                    }
+                    is Failed -> {
+                        hideProgress()
+                        binding?.root?.showSnackbarRed(it.message.toString())
+                    }
+                    is Success -> {
+                        hideProgress()
+                        activity?.openActivity<MainActivity>()
+                    }
+                }
+            }
         }
     }
 
