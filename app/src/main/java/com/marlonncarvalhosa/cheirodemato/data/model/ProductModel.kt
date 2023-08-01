@@ -10,3 +10,9 @@ data class ProductModel(
     val mes: String? = "",
     val ano: String? = ""
 )
+{
+    override fun toString(): String {
+        super.toString()
+        return name.toString()
+    }
+}

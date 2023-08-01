@@ -5,9 +5,9 @@ data class OrderModel(
     val status: String? = "",
     val note: String? = "",
     var totalValue: Double? = 0.0,
-    val amountProduct: Int? = 0,
     val items: List<ProductModel>? = emptyList(),
-    val dia: String? = "",
-    val mes: String? = "",
-    val ano: String? = ""
+    val day: String? = "",
+    val month: String? = "",
+    val monthName: String? = "",
+    val year: String? = ""
 )

@@ -5,29 +5,32 @@ import android.content.ContentValues
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.marlonncarvalhosa.cheirodemato.R
+import com.marlonncarvalhosa.cheirodemato.data.model.DateModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.DialogNewProductBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentProductsBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
-import com.marlonncarvalhosa.cheirodemato.view.home.ProductAdapter
-import com.tsuryo.swipeablerv.SwipeLeftRightCallback
+import com.marlonncarvalhosa.cheirodemato.util.MoneyTextWatcher
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ProductsFragment : Fragment() {
 
     private var binding: FragmentProductsBinding? = null
-    private val mAdapter = ProductAdapter(emptyList())
     private val viewModel: ProductViewModel by viewModel()
     private val listProduct = mutableListOf<ProductModel>()
     private val db = Firebase.firestore
@@ -44,6 +47,7 @@ class ProductsFragment : Fragment() {
         onClick()
         initListProducts(listProduct)
         getAll()
+        getDate()
     }
 
     private fun onClick() {
@@ -53,6 +57,14 @@ class ProductsFragment : Fragment() {
         binding?.fab?.setOnClickListener {
             initDialog()
         }
+        binding?.editSearch?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                val listFilter = listProduct.filter {  f -> f.name!!.contains(s, true) }
+                initListProducts(listFilter as MutableList<ProductModel>)
+            }
+            override fun afterTextChanged(s: Editable) {}
+        })
     }
 
     private fun getAll() {
@@ -71,15 +83,6 @@ class ProductsFragment : Fragment() {
     private fun initListProducts(listProduct: MutableList<ProductModel>) {
         binding?.recyclerProducts?.apply {
             adapter = ProductAdapter(listProduct.asReversed())
-            setListener(object : SwipeLeftRightCallback.Listener {
-                override fun onSwipedLeft(position: Int) {
-                    mAdapter.notifyDataSetChanged()
-                }
-
-                override fun onSwipedRight(position: Int) {
-                    mAdapter.notifyDataSetChanged()
-                }
-            })
         }
     }
 
@@ -99,6 +102,12 @@ class ProductsFragment : Fragment() {
         dialog.setCancelable(true)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         initSpinnerNewProductType(dialogBinding.editType)
+        dialogBinding.editPrice.addTextChangedListener(
+            MoneyTextWatcher(
+                dialogBinding.editPrice,
+                Locale("pt", "BR")
+            )
+        )
         dialog.show()
         dialogBinding.btnSave.setOnClickListener {
             val name = dialogBinding.editName.text
@@ -110,10 +119,10 @@ class ProductsFragment : Fragment() {
                 name = name.toString(),
                 type = type.toString(),
                 amount = amount.toString().toInt(),
-                price = price.toString().toDouble(),
-                dia = "02",
-                mes = "07",
-                ano = "23"
+                price = price.toString().replace("R$", "")?.replace(".", "")?.replace(",", ".")?.filterNot { it.isWhitespace() }!!.toDouble(),
+                dia = getDate().day,
+                mes = getDate().month,
+                ano = getDate().year
             ))
         }
     }
@@ -160,6 +169,25 @@ class ProductsFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.d(ContentValues.TAG, "Error getting documents: ", exception)
             }
+    }
+
+    private fun getDate(): DateModel {
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
+        val month_date = SimpleDateFormat("MMMM")
+        val year = calendar.get(Calendar.YEAR)
+        val monthInt: Int = calendar.get(Calendar.MONTH) + 1
+        var monthConverted = "" + monthInt
+        if (monthInt < 10) {
+            monthConverted = "0$monthConverted"
+        }
+
+        var dayInt = calendar.get(Calendar.DAY_OF_MONTH)
+        var dayConverted = "" + dayInt
+        if (dayInt < 10) {
+            dayConverted = "0$dayConverted"
+        }
+        val month_name = month_date.format(calendar.time)
+        return DateModel(dayConverted, monthConverted, year.toString())
     }
 
     override fun onDestroyView() {

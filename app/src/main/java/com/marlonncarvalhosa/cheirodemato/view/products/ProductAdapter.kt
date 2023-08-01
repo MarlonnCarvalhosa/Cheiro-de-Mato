@@ -1,4 +1,4 @@
-package com.marlonncarvalhosa.cheirodemato.view.home
+package com.marlonncarvalhosa.cheirodemato.view.products
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -20,12 +20,12 @@ class ProductAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ProductAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(data[position])
     }
 

@@ -19,8 +19,8 @@ class OrdersAdapter(
             item.let {
                 binding.textId.text = "# ${it.id}"
                 binding.textStatus.text = it.status
-                binding.textDate.text = "${it.dia}/${it.mes}/${it.ano}"
-                binding.textValue.text = it.totalValue.toString()
+                binding.textDate.text = "${it.day}/${it.month}/${it.year}"
+                binding.textValue.text = "R$ ${it.totalValue}"
                 binding.textDescription.text = it.note
             }
         }
