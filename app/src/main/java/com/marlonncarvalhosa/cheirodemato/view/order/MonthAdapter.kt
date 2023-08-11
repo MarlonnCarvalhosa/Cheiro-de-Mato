@@ -38,8 +38,12 @@ class MonthAdapter(
         val finishList = data.filter { f -> f.monthName == name[position] }
         holder.itemView.findViewById<AppCompatTextView>(R.id.text_value).text = "R$ ${finishList.sumByDouble { it.totalValue!! }}"
         holder.itemView.findViewById<RecyclerView>(R.id.recycler_order).apply {
-            adapter = OrdersAdapter(finishList)
+            adapter = OrdersAdapter(finishList, ::onClickOrders)
         }
+    }
+
+    private fun onClickOrders(orderModel: OrderModel) {
+
     }
 
     override fun getItemCount(): Int = name.size

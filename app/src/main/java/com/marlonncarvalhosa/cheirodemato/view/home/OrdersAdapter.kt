@@ -11,7 +11,7 @@ import com.marlonncarvalhosa.cheirodemato.databinding.ItemOrderBinding
 
 class OrdersAdapter(
     private val data: List<OrderModel>,
-    //private val onClickListener: (OrderModel) -> Unit
+    private val onClickListener: (OrderModel) -> Unit
 ) : RecyclerView.Adapter<OrdersAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemOrderBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -20,8 +20,9 @@ class OrdersAdapter(
                 binding.textId.text = "# ${it.id}"
                 binding.textStatus.text = it.status
                 binding.textDate.text = "${it.day}/${it.month}/${it.year}"
-                binding.textValue.text = "R$ ${it.totalValue}"
+                binding.textValue.text = "R$ ${String.format("%.2f", it.totalValue)}"
                 binding.textDescription.text = it.note
+                binding.card.setOnClickListener { onClickListener(item) }
             }
         }
     }

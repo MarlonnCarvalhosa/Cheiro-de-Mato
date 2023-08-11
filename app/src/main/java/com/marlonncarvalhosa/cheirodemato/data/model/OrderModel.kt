@@ -1,5 +1,7 @@
 package com.marlonncarvalhosa.cheirodemato.data.model
 
+import java.io.Serializable
+
 data class OrderModel(
     val id: Int? = 0,
     val status: String? = "",
@@ -10,4 +12,4 @@ data class OrderModel(
     val month: String? = "",
     val monthName: String? = "",
     val year: String? = ""
-)
+): Serializable

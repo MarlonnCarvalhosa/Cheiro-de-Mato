@@ -110,8 +110,12 @@ class HomeFragment : Fragment() {
 
     private fun initListOrder(listOrders: MutableList<OrderModel>) {
         binding?.includeAdmin?.recyclerLastOrder?.apply {
-            adapter = OrdersAdapter(listOrders.asReversed().take(3))
+            adapter = OrdersAdapter(listOrders.asReversed().take(3), ::onClickOrders)
         }
+    }
+
+    private fun onClickOrders(orderModel: OrderModel) {
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToOrderDetailFragment(orderModel))
     }
 
     private fun initListProduct(listOProducts: MutableList<ProductModel>) {
@@ -129,7 +133,7 @@ class HomeFragment : Fragment() {
         } else {
             binding?.includeAdmin?.btnHide?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.hide))
             val totalValue = listOrders.filter { f -> f.monthName == getDate().monthName }
-            binding?.includeAdmin?.textValue?.text = "R$ ${totalValue.sumByDouble { it.totalValue!! }}"
+            binding?.includeAdmin?.textValue?.text = "R$ ${String.format("%.2f", totalValue.sumByDouble { it.totalValue!! })}"
         }
     }
 

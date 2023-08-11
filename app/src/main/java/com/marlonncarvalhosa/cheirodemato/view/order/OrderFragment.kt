@@ -60,7 +60,7 @@ class OrderFragment : Fragment() {
     }
 
     private fun setupLayout(list: MutableList<OrderModel>) {
-        binding?.textValue?.text = "R$ ${list.sumByDouble { it.totalValue!! }}"
+        binding?.textValue?.text = "R$ ${String.format("%.2f", list.sumByDouble { it.totalValue!! })}"
     }
 
     private fun initListOrdersByMonth(

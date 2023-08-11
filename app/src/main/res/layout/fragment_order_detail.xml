@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    tools:context=".view.order.OrderFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.1"
+            android:text="Detalhes"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_back" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_products"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_title"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_layout_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Troco"
+            android:visibility="gone"
+            android:textColor="@color/main_green"
+            android:layout_marginTop="40dp"
+            android:textSize="20sp"
+            app:fontFamily="@font/poppins_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recycler_products" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_change"
+            style="@style/TextInputLayoutStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            app:boxStrokeColor="@color/light_grey"
+            app:boxStrokeWidth="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/btn_change"
+            app:layout_constraintStart_toStartOf="@+id/text_layout_change"
+            app:layout_constraintTop_toBottomOf="@+id/text_layout_change">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_change"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:imeOptions="actionNext"
+                android:inputType="numberDecimal" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_change"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_button_radius_50"
+            android:backgroundTint="@color/main_green"
+            android:fontFamily="@font/roboto_bold"
+            android:text="$"
+            android:visibility="gone"
+            android:enabled="false"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/input_layout_change"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/input_layout_change"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_layout_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Total"
+            android:layout_marginTop="40dp"
+            android:textColor="@color/main_green"
+            android:textSize="20sp"
+            app:fontFamily="@font/poppins_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_change" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="18dp"
+            app:cardBackgroundColor="@color/light_grey"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="5dp"
+            android:id="@+id/card"
+            app:layout_constraintTop_toBottomOf="@+id/text_layout_all"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_change_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="18dp"
+                    android:includeFontPadding="false"
+                    android:text="Troco:"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/poppins_bold"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_change_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="R$ 0.0"
+                    android:layout_marginStart="8dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/main_green"
+                    app:fontFamily="@font/poppins_bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_change_all"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@+id/text_change_all"
+                    app:layout_constraintTop_toTopOf="@+id/text_change_all" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_total_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:includeFontPadding="false"
+                    android:text="Valor total:"
+                    android:layout_marginTop="18dp"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:layout_marginBottom="18dp"
+                    app:fontFamily="@font/poppins_bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_change_all" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_total_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    tools:text="R$ 00,00"
+                    android:textSize="22sp"
+                    android:textColor="@color/main_green"
+                    android:layout_marginStart="8dp"
+                    app:fontFamily="@font/poppins_bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_total_all"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@+id/text_total_all"
+                    app:layout_constraintTop_toTopOf="@+id/text_total_all" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_finish"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_radius_6"
+            android:backgroundTint="@color/main_green"
+            android:fontFamily="@font/roboto_bold"
+            android:text="Finalizar"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:layout_marginVertical="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/card"
+            app:layout_constraintStart_toStartOf="@+id/card"
+            app:layout_constraintTop_toBottomOf="@+id/card" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

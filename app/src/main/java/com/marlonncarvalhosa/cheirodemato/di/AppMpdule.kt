@@ -1,20 +1,20 @@
 package com.marlonncarvalhosa.cheirodemato.di
 
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.marlonncarvalhosa.cheirodemato.data.repository.datasource.LoginRepository
-import com.marlonncarvalhosa.cheirodemato.data.repository.datasourceimpl.LoginRepositoryImpl
-import com.marlonncarvalhosa.cheirodemato.usecase.LoginUseCase
+import com.marlonncarvalhosa.cheirodemato.data.repository.datasource.AuthRepository
+import com.marlonncarvalhosa.cheirodemato.data.repository.datasourceimpl.AuthRepositoryImpl
+import com.marlonncarvalhosa.cheirodemato.usecase.SignInUseCase
 import com.marlonncarvalhosa.cheirodemato.view.home.HomeViewModel
-import com.marlonncarvalhosa.cheirodemato.view.login.LoginViewModel
+import com.marlonncarvalhosa.cheirodemato.view.login.AuthViewModel
 import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module{
     viewModel {
-        LoginViewModel(loginUseCase = get())
+        AuthViewModel(signInUseCase = get())
     }
     viewModel {
         HomeViewModel()
@@ -25,14 +25,14 @@ val viewModelModule = module{
 }
 
 val repositoryModule = module{
-    single<LoginRepository> {
-        LoginRepositoryImpl(auth = Firebase.auth)
+    single<AuthRepository> {
+        AuthRepositoryImpl()
     }
 }
 
 val useCase = module {
     single {
-        LoginUseCase(loginRepository = get())
+        SignInUseCase(authRepository = get())
     }
 }
 

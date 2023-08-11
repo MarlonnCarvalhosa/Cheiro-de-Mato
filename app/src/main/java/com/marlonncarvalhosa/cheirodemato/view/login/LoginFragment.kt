@@ -28,7 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LoginFragment : Fragment() {
 
     private var binding: FragmentLoginBinding? = null
-    private val viewModel: LoginViewModel by viewModel()
+    private val viewModel: AuthViewModel by viewModel()
     private var auth: FirebaseAuth? = null
 
     override fun onCreateView(
@@ -67,45 +67,28 @@ class LoginFragment : Fragment() {
             binding?.editPassword?.error = null
         }
 
-        if (binding?.editEmail?.error.isNullOrEmpty() && binding?.editPassword?.error.isNullOrEmpty()){
-            login(LoginModel(email, password))
-//            viewModel.login(LoginModel(email, password))
-//            observer()
+        if (binding?.editEmail?.error.isNullOrEmpty() && binding?.editPassword?.error.isNullOrEmpty()) {
+            viewModel.signInWithEmailAndPassword(email, password)
+            observeAuthViewState()
         }
     }
 
-    private fun observer() {
-        lifecycleScope.launchWhenCreated {
-            viewModel._resultLiveData.collect {
-                when (it) {
-                    is Loading -> {
-                        showProgress()
-                    }
-                    is Failed -> {
-                        hideProgress()
-                        binding?.root?.showSnackbarRed(it.message.toString())
-                    }
-                    is Success -> {
-                        hideProgress()
-                        activity?.openActivity<MainActivity>()
-                    }
+    private fun observeAuthViewState() {
+        viewModel.authViewState.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                AuthViewState.Loading -> {
+                    showProgress()
                 }
-            }
-        }
-    }
-
-    private fun login(model: LoginModel) {
-        auth?.signInWithEmailAndPassword(model.email, model.password)
-            ?.addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    val user = auth?.currentUser
+                AuthViewState.Success -> {
                     activity?.openActivity<MainActivity>()
                     hideProgress()
-                } else {
-                    binding?.root?.showSnackbarRed(task.exception.toString())
+                }
+                is AuthViewState.Error -> {
+                    binding?.root?.showSnackbarRed(viewState.errorMessage)
                     hideProgress()
                 }
             }
+        }
     }
 
     private fun showProgress() {
