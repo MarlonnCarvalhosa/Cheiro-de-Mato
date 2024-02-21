@@ -10,7 +10,6 @@ Este projeto é licenciado sob a [Licença Creative Commons Attribution-NonComme
 - **Plataforma:** Android
 - **Linguagem:** Kotlin
 - **Injeção de Dependência:** Koin
-- **Comunicação de Rede:** Retrofit
 - **Arquitetura:** Clean Architecture
 - **Padrão de Projeto:** MVVM com Flow
 - **Autenticação e Banco de Dados:** Firebase Authentication e Firestore
