@@ -42,11 +42,14 @@ O código-fonte do aplicativo está organizado seguindo os princípios da Clean 
 
 ## Prints do Aplicativo
 
-![Tela de Login]((https://imgur.com/X0VwTdv))
-*Legenda: Tela de login do Cheiro de Mato Manager App*
+![Tela de Login](https://i.imgur.com/X0VwTdv.png)
+*Tela de login do Cheiro de Mato App*
 
-![Histórico de Vendas]((https://imgur.com/BGVNQnw))
-*Legenda: Histórico de vendas mostrando detalhes das transações*
+![Histórico de Vendas](https://i.imgur.com/BGVNQnw.png)
+*Histórico de vendas mostrando detalhes das transações*
+
+![Detalhes da venda](https://i.imgur.com/dcQNPEM.png)
+*Detalhes da vendas*
 
 ## Contribuição
 Contribuições são bem-vindas! Se você encontrar bugs, problemas ou deseja adicionar novos recursos, fique à vontade para abrir issues e pull requests.
