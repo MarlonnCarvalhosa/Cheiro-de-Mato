@@ -4,6 +4,7 @@
 O Cheiro de Mato App é um aplicativo desenvolvido em Kotlin para gerenciar a empresa "Cheiro de Mato", especializada na venda de tempeiros e produtos naturais. Este aplicativo é projetado para facilitar o gerenciamento financeiro, proporcionando recursos para acompanhar o histórico de vendas, lucros e estoque da empresa.
 
 ## Tecnologias Utilizadas
+- **Plataforma:** Android
 - **Linguagem:** Kotlin
 - **Injeção de Dependência:** Koin
 - **Comunicação de Rede:** Retrofit
