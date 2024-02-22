@@ -108,7 +108,7 @@
         android:background="@drawable/bg_button_radius_6"
         android:backgroundTint="@color/main_green"
         android:fontFamily="@font/roboto_bold"
-        android:text="Entrar"
+        android:text="@string/text_login_button"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/input_password_layout"

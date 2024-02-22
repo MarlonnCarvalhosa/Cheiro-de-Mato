@@ -11,4 +11,5 @@
     <string name="error_empty_amount">Quantidade inválida.</string>
 
     <string name="text_products">Produtos</string>
+    <string name="text_login_button">Entrar</string>
 </resources>
