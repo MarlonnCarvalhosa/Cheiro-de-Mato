@@ -27,7 +27,9 @@ import com.marlonncarvalhosa.cheirodemato.databinding.DialogNewOrderBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentHomeBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.MoneyTextWatcher
+import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import com.marlonncarvalhosa.cheirodemato.view.main.MainActivity
+import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewState
 import com.marlonncarvalhosa.cheirodemato.view.products.ProductAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -57,23 +59,27 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).setColorStatusBar(R.color.white)
         auth = Firebase.auth
-        getAll()
+        viewModel.getAllOrders()
+        observerOrders()
         getAllProducts()
         onClick()
     }
 
-    private fun getAll() {
-        db.collection("orders")
-            .get()
-            .addOnSuccessListener { result ->
-                listOrders.clear()
-                listOrders.addAll(result.toObjects(OrderModel::class.java))
-                initListOrder(listOrders)
-                setupView()
+    private fun observerOrders() {
+        viewModel.orderViewState.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is OrderViewState.Loading -> {}
+                is OrderViewState.SuccessGetAllOrder -> {
+                    listOrders.clear()
+                    listOrders.addAll(viewState.orders)
+                    initListOrder(listOrders)
+                    setupView()
+                }
+                is OrderViewState.ErrorGetAllOrder -> {
+                    binding?.root?.showSnackbarRed(viewState.errorMessage)
+                }
             }
-            .addOnFailureListener { exception ->
-                Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-            }
+        }
     }
 
     private fun getAllProducts() {
@@ -246,7 +252,7 @@ class HomeFragment : Fragment() {
                 .document(openOrder.id.toString())
                 .update(orderUpdate as Map<String, Any>)
                 .addOnSuccessListener { result ->
-                    getAll()
+                    viewModel.getAllOrders()
                     dialog.dismiss()
                 }
                 .addOnFailureListener { exception ->
@@ -271,7 +277,7 @@ class HomeFragment : Fragment() {
                 .document((listOrders.size+1).toString())
                 .set(order)
                 .addOnSuccessListener { result ->
-                    getAll()
+                    viewModel.getAllOrders()
                     dialog.dismiss()
                 }
                 .addOnFailureListener { exception ->

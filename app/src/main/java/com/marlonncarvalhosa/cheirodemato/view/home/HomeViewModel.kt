@@ -1,17 +1,37 @@
 package com.marlonncarvalhosa.cheirodemato.view.home
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
+import com.marlonncarvalhosa.cheirodemato.usecase.OrderUseCase
+import com.marlonncarvalhosa.cheirodemato.view.login.AuthViewState
+import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewState
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel(
+    private val orderUseCase: OrderUseCase
+): ViewModel() {
+    private val _orderViewState = MutableLiveData<OrderViewState>()
+    val orderViewState: LiveData<OrderViewState> = _orderViewState
 
-    fun listProduct():MutableList<ProductModel>{
-        val list = mutableListOf<ProductModel>()
-        list.add(ProductModel(1,"Produto 2","Peso", 10000, 50.00, "06", "23", "23"))
-        list.add(ProductModel(2,"Produto 3","Peso", 3000, 50.00, "06", "23", "23"))
-        list.add(ProductModel(3,"Produto 4","Unidade", 4, 50.00, "06", "23", "23"))
-        list.add(ProductModel(3,"Produto 4","Unidade", 4, 50.00, "06", "23", "23"))
-        return list
+    fun getAllOrders() {
+        viewModelScope.launch {
+            orderUseCase.getAllOrders()
+                .onStart {
+                    _orderViewState.value = OrderViewState.Loading
+                }
+                .catch { error ->
+                    _orderViewState.value = OrderViewState.ErrorGetAllOrder(error.message.toString())
+                }
+                .collect {
+                    _orderViewState.value = OrderViewState.SuccessGetAllOrder(it)
+                }
+        }
     }
+
 }

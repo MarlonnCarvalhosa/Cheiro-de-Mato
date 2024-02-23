@@ -73,6 +73,7 @@ dependencies {
     def coroutines_version = "1.6.4"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.2'
 
     //LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"

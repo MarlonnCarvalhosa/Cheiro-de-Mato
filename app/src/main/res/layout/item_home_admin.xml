@@ -121,7 +121,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_last_order" />
 
-    <com.tsuryo.swipeablerv.SwipeableRecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_last_order"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_products" />
 
-    <com.tsuryo.swipeablerv.SwipeableRecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_products"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
