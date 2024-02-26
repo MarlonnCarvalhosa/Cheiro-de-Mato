@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 
 class OrderFragment : Fragment() {
 
@@ -60,7 +61,7 @@ class OrderFragment : Fragment() {
     }
 
     private fun setupLayout(list: MutableList<OrderModel>) {
-        binding?.textValue?.text = "R$ ${String.format("%.2f", list.sumByDouble { it.totalValue!! })}"
+        binding?.textValue?.text = list.sumByDouble { it.totalValue }.formatAsCurrency()
     }
 
     private fun initListOrdersByMonth(

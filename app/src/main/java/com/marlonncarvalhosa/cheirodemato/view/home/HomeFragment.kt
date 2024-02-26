@@ -191,7 +191,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateExistingOrder(order: OrderModel, productModel: ProductModel) {
-        val updatedItems = order.items.orEmpty().toMutableList().apply { add(productModel) }
+        val updatedItems = order.items.orEmpty().toMutableList()
+
+        val existingProduct = updatedItems.find { it.id == productModel.id }
+        if (existingProduct != null) {
+            existingProduct.amount = productModel.amount?.let { existingProduct.amount?.plus(it) }
+            existingProduct.price = productModel.price?.let { existingProduct.price?.plus(it) }
+        } else {
+            updatedItems.add(productModel)
+        }
+
         val totalValue = updatedItems.sumByDouble { it.price ?: 0.0 }
 
         val orderUpdate = hashMapOf(

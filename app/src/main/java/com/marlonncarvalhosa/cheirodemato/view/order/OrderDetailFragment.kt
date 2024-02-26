@@ -18,6 +18,7 @@ import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderDetailBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.MoneyTextWatcher
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.util.hideKeyBoard
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -53,10 +54,7 @@ class OrderDetailFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding?.btnChange?.setOnClickListener {
-            val value = binding?.editChange?.text.toString().replace("R$", "")?.replace(".", "")?.replace(",", ".")?.filterNot { it.isWhitespace() }!!.toDouble()
-            if (value != order?.totalValue!!) {
-                binding?.textChangeValue?.text = "R$ ${String.format("%.2f", value.minus(order?.totalValue!!))}"
-            }
+            calculateChange(order)
             hideKeyBoard(it)
         }
         binding?.btnFinish?.setOnClickListener {
@@ -85,7 +83,6 @@ class OrderDetailFragment : Fragment() {
                 is OrderViewState.SuccessUpdateOrder -> {
                     //orderViewModel.getAllOrders()
                     getAll()
-
                 }
                 is OrderViewState.SuccessDeleteOrder -> {
                     findNavController().popBackStack()
@@ -132,7 +129,7 @@ class OrderDetailFragment : Fragment() {
             binding?.textLayoutChange?.visibility = View.VISIBLE
             binding?.btnFinish?.visibility = View.VISIBLE
         }
-        binding?.textTotalValue?.text = "R$ ${String.format("%.2f", order?.totalValue)}"
+        binding?.textTotalValue?.text = order?.totalValue?.formatAsCurrency()
         binding?.editChange?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -146,6 +143,16 @@ class OrderDetailFragment : Fragment() {
                 Locale("pt", "BR")
             )
         )
+        calculateChange(order)
+    }
+
+    private fun calculateChange(actualOrder: OrderModel?) {
+        val rawText = binding?.editChange?.text.toString()
+        val value = rawText.replace("R$", "").replace(".", "").replace(",", ".").filterNot { it.isWhitespace() }?.toDoubleOrNull()
+
+        if (value != null && value != actualOrder?.totalValue) {
+            binding?.textChangeValue?.text = actualOrder?.totalValue?.let { value.minus(it).formatAsCurrency() }
+        }
     }
 
     private fun initListItems(listOrders: MutableList<ProductModel>, order: OrderModel?) {

@@ -9,6 +9,7 @@ import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemOrderBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 
 class OrdersAdapter(
     private val data: List<OrderModel>,
@@ -21,7 +22,7 @@ class OrdersAdapter(
                 binding.textId.text = "# ${it.id}"
                 binding.textStatus.text = it.status
                 binding.textDate.text = "${it.day}/${it.month}/${it.year}"
-                binding.textValue.text = "R$ ${String.format("%.2f", it.totalValue)}"
+                binding.textValue.text = it.totalValue.formatAsCurrency()
                 binding.textDescription.text = it.note
                 binding.card.setOnClickListener { onClickListener(item) }
             }

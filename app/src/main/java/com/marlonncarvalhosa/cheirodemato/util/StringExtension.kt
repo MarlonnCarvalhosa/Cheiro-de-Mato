@@ -2,6 +2,7 @@ package com.marlonncarvalhosa.cheirodemato.util
 
 import android.annotation.SuppressLint
 import com.marlonncarvalhosa.cheirodemato.util.Validation.isEmailValid
+import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -41,6 +42,11 @@ fun String.isValidQuantity(): Boolean {
         else -> true
     }
 
+}
+
+fun Double.formatAsCurrency(): String {
+    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    return currencyFormat.format(this)
 }
 
 @SuppressLint("SimpleDateFormat")

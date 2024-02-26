@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -32,6 +32,12 @@ class OrderDialog(private val context: Context) {
 
     fun show(listOProducts: List<ProductModel>) {
         dialog = createDialog()
+
+        val parentView = dialogBinding.root.parent as? ViewGroup
+        parentView?.removeView(dialogBinding.root)
+
+        dialog?.setContentView(dialogBinding.root)
+
         val productAdapter = ArrayAdapter(
             context,
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
@@ -46,6 +52,7 @@ class OrderDialog(private val context: Context) {
         dialogBinding.btnClose.setOnClickListener {
             dialog?.dismiss()
         }
+
 
         dialogBinding.btnSave.setOnClickListener {
             val name = dialogBinding.editName.text.toString()
@@ -69,6 +76,9 @@ class OrderDialog(private val context: Context) {
 
     private fun createDialog(): Dialog {
         val dialog = Dialog(context)
+        val parentView = dialogBinding.root.parent as? ViewGroup
+        parentView?.removeView(dialogBinding.root)
+
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(true)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

@@ -12,6 +12,7 @@ import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemMonthBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemProductCartBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.view.home.OrdersAdapter
 
 class ItemsCartAdapter(
@@ -27,7 +28,7 @@ class ItemsCartAdapter(
                 if (order?.status == Constants.STATUS_FINISH) binding.btnTrash.visibility = View.GONE
                 binding.textProductName.text = it.name
                 binding.textAmount.text = it.amount.toString()
-                binding.textPrice.text = "R$ ${it.price}"
+                binding.textPrice.text = it.price?.formatAsCurrency()
             }
         }
     }
