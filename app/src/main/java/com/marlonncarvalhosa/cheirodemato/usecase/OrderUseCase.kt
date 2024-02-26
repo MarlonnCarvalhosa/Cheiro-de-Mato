@@ -11,6 +11,10 @@ class OrderUseCase(private val orderRepository: OrderRepository) {
     }
 
     suspend fun newOrder(id: String, order: OrderModel): Flow<DocumentReference> {
-        return orderRepository.newOrders(id, order)
+        return orderRepository.newOrder(id, order)
+    }
+
+    suspend fun updateOrder(id: String, order: Map<String, Any>): Flow<DocumentReference> {
+        return orderRepository.updateOrder(id, order)
     }
 }

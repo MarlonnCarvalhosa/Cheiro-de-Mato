@@ -7,6 +7,9 @@ object Constants {
     const val FIRST_ACCESS = "firstAccess"
     const val YES = "yes"
     const val NO  = "no"
+    const val ITEMS  = "items"
+    const val TOTAL_VALUE  = "totalValue"
+    const val STATUS  = "status"
 
     //Mask
     const val FORMAT_CPF = "###.###.###-##"
@@ -47,6 +50,10 @@ object Constants {
     const val NAVIGATION = "TYPE"
     const val PRICE = "PRICE"
     const val CREDIT = "CREDIT"
+
+    // Status
+    const val STATUS_WAITING = "Aguardando"
+    const val STATUS_FINISH = "Finalizado"
 
     // Collections
     const val ORDERS = "orders"

@@ -9,4 +9,5 @@ sealed class OrderViewState {
     data class Error(val errorMessage: String) : OrderViewState()
 
     object SuccessNewOrder : OrderViewState()
+    object SuccessUpdateOrder : OrderViewState()
 }

@@ -14,7 +14,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.marlonncarvalhosa.cheirodemato.R
-import com.marlonncarvalhosa.cheirodemato.data.model.DateModel
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentHomeBinding
@@ -24,10 +23,10 @@ import com.marlonncarvalhosa.cheirodemato.util.OrderDialogCommand
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import com.marlonncarvalhosa.cheirodemato.util.toFormattedDate
 import com.marlonncarvalhosa.cheirodemato.view.main.MainActivity
+import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewModel
 import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewState
 import com.marlonncarvalhosa.cheirodemato.view.products.ProductAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -35,7 +34,7 @@ import java.util.TimeZone
 class HomeFragment : Fragment() {
 
     private var binding: FragmentHomeBinding? = null
-    private val viewModel: HomeViewModel by viewModel()
+    private val orderViewModel: OrderViewModel by viewModel()
     private val listOrders = mutableListOf<OrderModel>()
     private val listOProducts = mutableListOf<ProductModel>()
     private var orderDialog: OrderDialog? = null
@@ -57,15 +56,15 @@ class HomeFragment : Fragment() {
         (activity as MainActivity).setColorStatusBar(R.color.white)
         orderDialog = OrderDialog(requireContext())
         auth = Firebase.auth
-        viewModel.getAllOrders()
+        orderViewModel.getAllOrders()
         observerOrders()
-        getAllProducts()
-        orderDialogCommand()
+        observerOrderDialogCommand()
         onClick()
+        getAllProducts()
     }
 
     private fun observerOrders() {
-        viewModel.orderViewState.observe(viewLifecycleOwner) { viewState ->
+        orderViewModel.orderViewState.observe(viewLifecycleOwner) { viewState ->
             when (viewState) {
                 is OrderViewState.Loading -> {}
                 is OrderViewState.SuccessGetAllOrders -> {
@@ -75,7 +74,11 @@ class HomeFragment : Fragment() {
                     setupView()
                 }
                 is OrderViewState.SuccessNewOrder -> {
-                    viewModel.getAllOrders()
+                    orderViewModel.getAllOrders()
+                    orderDialog?.dismiss()
+                }
+                is OrderViewState.SuccessUpdateOrder -> {
+                    orderViewModel.getAllOrders()
                     orderDialog?.dismiss()
                 }
                 is OrderViewState.Error -> {
@@ -85,11 +88,11 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun orderDialogCommand() {
+    private fun observerOrderDialogCommand() {
         orderDialog?.orderCommand?.observe(viewLifecycleOwner) { viewCommand ->
             when(viewCommand) {
                 is  OrderDialogCommand.ValidationFieldsCommand -> {
-                    newOrder(viewCommand.productModel)
+                    processOrder(viewCommand.productModel)
                 }
             }
         }
@@ -145,54 +148,78 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupView() {
+        val includeAdmin = binding?.includeAdmin
+
         binding?.includeAdmin?.textMonth?.text = dateModel.monthName?.capitalize()
+
         if (hide) {
-            binding?.includeAdmin?.btnHide?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.show))
-            binding?.includeAdmin?.textValue?.text = "R$ ----"
+            setHideState()
         } else {
-            binding?.includeAdmin?.btnHide?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.hide))
-            val totalValue = listOrders.filter { f -> f.monthName == dateModel.monthName }
-            binding?.includeAdmin?.textValue?.text = "R$ ${String.format("%.2f", totalValue.sumByDouble { it.totalValue!! })}"
+            setShowState()
+            displayTotalValue()
         }
     }
 
-    private fun newOrder(productModel: ProductModel) {
-        val openOrder = listOrders.firstOrNull { f -> f.status == "Aguardando" }
-        if (openOrder != null) {
-            val listToUpdate = mutableListOf<ProductModel>()
-            openOrder.items?.let { listToUpdate.addAll(it) }
-            listToUpdate.add(productModel)
-            val orderUpdate = hashMapOf(
-                "items" to listToUpdate,
-                "totalValue" to listToUpdate.sumByDouble { it.price!! }
-            )
-            db.collection(Constants.ORDERS)
-                .document(openOrder.id.toString())
-                .update(orderUpdate as Map<String, Any>)
-                .addOnSuccessListener { result ->
-                    viewModel.getAllOrders()
-                    //dialog.dismiss()
-                }
-                .addOnFailureListener { exception ->
-                    //dialog.dismiss()
-                    Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-                }
-        } else {
-            val newProduct = mutableListOf<ProductModel>()
-            newProduct.add(productModel)
-            val order = OrderModel(
-                    id = listOrders.size+1,
-                    status = "Aguardando",
-                    note = "",
-                    totalValue = productModel.price,
-                    items = newProduct,
-                    day = dateModel.day,
-                    month = dateModel.month,
-                    monthName = dateModel.monthName,
-                    year = dateModel.year
-                )
-            viewModel.newOrder((listOrders.size+1).toString(), order)
+    private fun setHideState() {
+        binding?.includeAdmin?.apply {
+            btnHide.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.show))
+            textValue.text = "R$ ----"
         }
+    }
+
+    private fun setShowState() {
+        binding?.includeAdmin?.btnHide?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.hide))
+    }
+
+    private fun displayTotalValue() {
+        binding?.includeAdmin?.textValue?.text = calculateTotalValue().let { "R$ ${String.format("%.2f", it)}" }
+    }
+
+    private fun calculateTotalValue(): Double {
+        return listOrders
+            .filter { it.monthName == dateModel.monthName }
+            .sumByDouble { it.totalValue ?: 0.0 }
+    }
+
+    private fun processOrder(productModel: ProductModel) {
+        val openOrder = listOrders.firstOrNull { it.status == Constants.STATUS_WAITING }
+
+        if (openOrder != null) {
+            updateExistingOrder(openOrder, productModel)
+        } else {
+            createNewOrder(productModel)
+        }
+    }
+
+    private fun updateExistingOrder(order: OrderModel, productModel: ProductModel) {
+        val updatedItems = order.items.orEmpty().toMutableList().apply { add(productModel) }
+        val totalValue = updatedItems.sumByDouble { it.price ?: 0.0 }
+
+        val orderUpdate = hashMapOf(
+            Constants.ITEMS to updatedItems,
+            Constants.TOTAL_VALUE to totalValue
+        )
+
+        orderViewModel.updateOrder(order.id.toString(), orderUpdate)
+    }
+
+    private fun createNewOrder(productModel: ProductModel) {
+        val newProduct = mutableListOf(productModel)
+        val newOrderId = listOrders.size + 1
+
+        val newOrder = OrderModel(
+            id = newOrderId,
+            status = Constants.STATUS_WAITING,
+            note = "",
+            totalValue = productModel.price ?: 0.0,
+            items = newProduct,
+            day = dateModel.day,
+            month = dateModel.month,
+            monthName = dateModel.monthName,
+            year = dateModel.year
+        )
+
+        orderViewModel.newOrder(newOrderId.toString(), newOrder)
     }
 
     override fun onDestroyView() {

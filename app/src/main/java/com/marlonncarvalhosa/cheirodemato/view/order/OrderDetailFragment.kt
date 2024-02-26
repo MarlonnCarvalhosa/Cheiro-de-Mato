@@ -54,8 +54,8 @@ class OrderDetailFragment : Fragment() {
         }
         binding?.btnFinish?.setOnClickListener {
             val orderUpdate = hashMapOf(
-                "items" to listProduct,
-                "status" to "Finalizado"
+                Constants.ITEMS to listProduct,
+                Constants.STATUS to Constants.STATUS_FINISH
             )
             db.collection(Constants.ORDERS)
                 .document(order?.id.toString())
@@ -87,7 +87,7 @@ class OrderDetailFragment : Fragment() {
     }
 
     private fun setupView(order: OrderModel?) {
-        if (order?.status == "Finalizado") {
+        if (order?.status == Constants.STATUS_FINISH) {
             binding?.editChange?.visibility = View.GONE
             binding?.btnChange?.visibility = View.GONE
             binding?.textChangeValue?.visibility = View.GONE
@@ -136,8 +136,8 @@ class OrderDetailFragment : Fragment() {
     private fun updateOrder(productModel: ProductModel) {
         if (listProduct.isNotEmpty()) {
             val orderUpdate = hashMapOf(
-                "items" to listProduct,
-                "totalValue" to productModel.price?.let { order?.totalValue?.minus(it) }
+                Constants.ITEMS to listProduct,
+                Constants.TOTAL_VALUE to productModel.price?.let { order?.totalValue?.minus(it) }
             )
             db.collection(Constants.ORDERS)
                 .document(order?.id.toString())

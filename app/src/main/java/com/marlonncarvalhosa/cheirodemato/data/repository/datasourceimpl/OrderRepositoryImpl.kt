@@ -24,11 +24,25 @@ class OrderRepositoryImpl: OrderRepository {
         }
     }
 
-    override suspend fun newOrders(id: String, order: OrderModel): Flow<DocumentReference> = flow {
+    override suspend fun newOrder(id: String, order: OrderModel): Flow<DocumentReference> = flow {
         try {
             db.collection(Constants.ORDERS)
                 .document(id)
                 .set(order)
+                .await()
+            val documentReference = db.collection(Constants.ORDERS).document(id)
+            emit(documentReference)
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Error adding order", e)
+            throw e
+        }
+    }
+
+    override suspend fun updateOrder(id: String, order: Map<String, Any>): Flow<DocumentReference> = flow {
+        try {
+            db.collection(Constants.ORDERS)
+                .document(id)
+                .update(order)
                 .await()
             val documentReference = db.collection(Constants.ORDERS).document(id)
             emit(documentReference)

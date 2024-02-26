@@ -11,6 +11,7 @@ import com.marlonncarvalhosa.cheirodemato.usecase.OrderUseCase
 import com.marlonncarvalhosa.cheirodemato.usecase.SignInUseCase
 import com.marlonncarvalhosa.cheirodemato.view.home.HomeViewModel
 import com.marlonncarvalhosa.cheirodemato.view.login.AuthViewModel
+import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewModel
 import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -20,10 +21,13 @@ val viewModelModule = module{
         AuthViewModel(signInUseCase = get())
     }
     viewModel {
-        HomeViewModel(orderUseCase = get())
+        HomeViewModel()
     }
     viewModel {
         ProductViewModel()
+    }
+    viewModel {
+        OrderViewModel(orderUseCase = get())
     }
 }
 
