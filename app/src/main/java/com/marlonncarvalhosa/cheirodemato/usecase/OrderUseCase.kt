@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 class OrderUseCase(private val orderRepository: OrderRepository) {
     suspend fun getAllOrders(): Flow<List<OrderModel>> {
-        return orderRepository.getAllOrders()
+        return orderRepository.getOrders()
     }
 
     suspend fun newOrder(id: String, order: OrderModel): Flow<DocumentReference> {
@@ -16,5 +16,9 @@ class OrderUseCase(private val orderRepository: OrderRepository) {
 
     suspend fun updateOrder(id: String, order: Map<String, Any>): Flow<DocumentReference> {
         return orderRepository.updateOrder(id, order)
+    }
+
+    suspend fun deleteOrder(id: String): Flow<DocumentReference> {
+        return orderRepository.deleteOrder(id)
     }
 }

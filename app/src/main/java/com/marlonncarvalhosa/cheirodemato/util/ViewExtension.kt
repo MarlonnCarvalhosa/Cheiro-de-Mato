@@ -2,6 +2,7 @@ package com.marlonncarvalhosa.cheirodemato.util
 
 import android.app.Activity
 import android.content.*
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Build
@@ -11,12 +12,14 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.View
 import android.view.animation.TranslateAnimation
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.google.android.material.snackbar.Snackbar
 import com.marlonncarvalhosa.cheirodemato.R
 import java.text.SimpleDateFormat
@@ -146,6 +149,15 @@ fun setupUnderLine(text: CharSequence?): CharSequence {
     val mSpannableString = SpannableString(text)
     mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
     return mSpannableString
+}
+
+fun hideKeyBoard(it: View) {
+    try {
+        val imm = it.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(it.windowToken, 0)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
 
 fun setDateFormat(oldFormat: String, format: String, date: String, context: Context): String {

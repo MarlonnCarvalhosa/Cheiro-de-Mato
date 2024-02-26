@@ -10,4 +10,5 @@ sealed class OrderViewState {
 
     object SuccessNewOrder : OrderViewState()
     object SuccessUpdateOrder : OrderViewState()
+    object SuccessDeleteOrder : OrderViewState()
 }

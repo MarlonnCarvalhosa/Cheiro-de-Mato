@@ -18,11 +18,15 @@ import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderDetailBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.MoneyTextWatcher
+import com.marlonncarvalhosa.cheirodemato.util.hideKeyBoard
+import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
 class OrderDetailFragment : Fragment() {
 
     private var binding: FragmentOrderDetailBinding? = null
+    private val orderViewModel: OrderViewModel by viewModel()
     private val listOrders = mutableListOf<OrderModel>()
     private val listProduct = mutableListOf<ProductModel>()
     private val args: OrderDetailFragmentArgs by navArgs()
@@ -38,6 +42,8 @@ class OrderDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        orderViewModel.getAllOrders()
+        observerOrders()
         onClick()
         getAll()
     }
@@ -51,6 +57,7 @@ class OrderDetailFragment : Fragment() {
             if (value != order?.totalValue!!) {
                 binding?.textChangeValue?.text = "R$ ${String.format("%.2f", value.minus(order?.totalValue!!))}"
             }
+            hideKeyBoard(it)
         }
         binding?.btnFinish?.setOnClickListener {
             val orderUpdate = hashMapOf(
@@ -66,6 +73,27 @@ class OrderDetailFragment : Fragment() {
                 .addOnFailureListener { exception ->
                     Log.d(ContentValues.TAG, "Error getting documents: ", exception)
                 }
+        }
+    }
+
+    private fun observerOrders() {
+        orderViewModel.orderViewState.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is OrderViewState.Loading -> {}
+                is OrderViewState.SuccessGetAllOrders -> {}
+                is OrderViewState.SuccessNewOrder -> {}
+                is OrderViewState.SuccessUpdateOrder -> {
+                    //orderViewModel.getAllOrders()
+                    getAll()
+
+                }
+                is OrderViewState.SuccessDeleteOrder -> {
+                    findNavController().popBackStack()
+                }
+                is OrderViewState.Error -> {
+                    binding?.root?.showSnackbarRed(viewState.errorMessage)
+                }
+            }
         }
     }
 
@@ -130,35 +158,23 @@ class OrderDetailFragment : Fragment() {
         listProduct.removeIf {
             it.id == model.id
         }
-        updateOrder(model)
+        processOrder(model)
+    }
+
+    private fun processOrder(productModel: ProductModel) {
+        if (listProduct.isNotEmpty()) {
+            updateOrder(productModel)
+        } else {
+            orderViewModel.deleteOrder(order?.id.toString())
+        }
     }
 
     private fun updateOrder(productModel: ProductModel) {
-        if (listProduct.isNotEmpty()) {
-            val orderUpdate = hashMapOf(
-                Constants.ITEMS to listProduct,
-                Constants.TOTAL_VALUE to productModel.price?.let { order?.totalValue?.minus(it) }
-            )
-            db.collection(Constants.ORDERS)
-                .document(order?.id.toString())
-                .update(orderUpdate as Map<String, Any>)
-                .addOnSuccessListener { result ->
-                    getAll()
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-                }
-        } else {
-            db.collection(Constants.ORDERS)
-                .document(order?.id.toString())
-                .delete()
-                .addOnSuccessListener { result ->
-                    findNavController().popBackStack()
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-                }
-        }
+        val orderUpdate = hashMapOf(
+            Constants.ITEMS to listProduct,
+            Constants.TOTAL_VALUE to productModel.price?.let { order?.totalValue?.minus(it) }
+        )
+        orderViewModel.updateOrder(order?.id.toString(), orderUpdate as Map<String, Any>)
     }
 
     override fun onDestroyView() {

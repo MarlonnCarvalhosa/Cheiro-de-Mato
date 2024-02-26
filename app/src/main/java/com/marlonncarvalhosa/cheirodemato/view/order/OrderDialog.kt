@@ -1,4 +1,4 @@
-package com.marlonncarvalhosa.cheirodemato.util
+package com.marlonncarvalhosa.cheirodemato.view.order
 
 import android.content.Context
 import android.app.Dialog
@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -13,10 +14,14 @@ import androidx.lifecycle.MutableLiveData
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.DialogNewOrderBinding
+import com.marlonncarvalhosa.cheirodemato.util.Constants
+import com.marlonncarvalhosa.cheirodemato.util.OrderDialogCommand
+import com.marlonncarvalhosa.cheirodemato.util.toFormattedDate
 import java.util.Calendar
 import java.util.TimeZone
 
 class OrderDialog(private val context: Context) {
+    private val dialogBinding = DialogNewOrderBinding.inflate((context as AppCompatActivity).layoutInflater)
     private var selectedProduct: ProductModel? = null
     private var dialog: Dialog? = null
     private val calendar = Calendar.getInstance(TimeZone.getDefault())
@@ -26,8 +31,7 @@ class OrderDialog(private val context: Context) {
         get() = _orderCommand
 
     fun show(listOProducts: List<ProductModel>) {
-        val dialogBinding = DialogNewOrderBinding.inflate((context as AppCompatActivity).layoutInflater)
-        dialog = createDialog(dialogBinding)
+        dialog = createDialog()
         val productAdapter = ArrayAdapter(
             context,
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
@@ -35,9 +39,13 @@ class OrderDialog(private val context: Context) {
         )
         dialogBinding.editName.setAdapter(productAdapter)
 
-        setupTextWatcher(dialogBinding, listOProducts)
+        setupTextWatcher(listOProducts)
 
         dialog?.show()
+
+        dialogBinding.btnClose.setOnClickListener {
+            dialog?.dismiss()
+        }
 
         dialogBinding.btnSave.setOnClickListener {
             val name = dialogBinding.editName.text.toString()
@@ -45,12 +53,12 @@ class OrderDialog(private val context: Context) {
             val amount = dialogBinding.editAmount.text.toString().toIntOrNull() ?: 0
 
             selectedProduct?.let {
-                validation(dialogBinding, ProductModel(
+                validation(ProductModel(
                     id = it.id,
                     name = name,
                     type = it.type,
                     amount = amount,
-                    price = price.replace("R$", "")?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull() ?: 0.0,
+                    price = price.replace("R$", "").replace(".", "").replace(",", ".").toDoubleOrNull() ?: 0.0,
                     dia = dateModel.day,
                     mes = dateModel.month,
                     ano = dateModel.year
@@ -59,7 +67,7 @@ class OrderDialog(private val context: Context) {
         }
     }
 
-    private fun createDialog(dialogBinding: DialogNewOrderBinding): Dialog {
+    private fun createDialog(): Dialog {
         val dialog = Dialog(context)
         dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(true)
@@ -67,9 +75,10 @@ class OrderDialog(private val context: Context) {
         return dialog
     }
 
-    private fun setupTextWatcher(dialogBinding: DialogNewOrderBinding, listOProducts: List<ProductModel>) {
-        dialogBinding.editName.setOnItemClickListener { _, _, i, _ ->
-            selectedProduct = listOProducts.getOrNull(i)
+    private fun setupTextWatcher(listOProducts: List<ProductModel>) {
+        dialogBinding.editName.setOnItemClickListener { adapterView, _, i, _ ->
+            val nameSelected = adapterView.getItemAtPosition(i).toString()
+            selectedProduct = listOProducts.firstOrNull { f -> f.name == nameSelected }
 
             val textWatcher = object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -77,7 +86,7 @@ class OrderDialog(private val context: Context) {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
                 override fun afterTextChanged(s: Editable) {
-                    updateFinalPrice(dialogBinding, s.toString())
+                    updateFinalPrice(s.toString())
                 }
             }
 
@@ -85,10 +94,10 @@ class OrderDialog(private val context: Context) {
         }
     }
 
-    private fun updateFinalPrice(dialogBinding: DialogNewOrderBinding, amountText: String) {
+    private fun updateFinalPrice(amountText: String) {
         if (amountText.isNotBlank()) {
             val calculatedPrice = selectedProduct?.let {
-                if (it.type == "Peso") {
+                if (it.type == Constants.WEIGHT) {
                     it.price?.div(100)?.times(amountText.toDoubleOrNull() ?: 0.0)
                 } else {
                     it.price?.times(amountText.toDoubleOrNull() ?: 0.0)
@@ -105,8 +114,15 @@ class OrderDialog(private val context: Context) {
         }
     }
 
+    fun clearTextFields() {
+        dialogBinding.editName.requestFocus()
+        dialogBinding.editName.setText("")
+        dialogBinding.editPrice.setText("")
+        dialogBinding.editAmount.setText("")
+        selectedProduct = ProductModel()
+    }
+
     private fun validation(
-        dialogBinding: DialogNewOrderBinding,
         productModel: ProductModel
     ) {
         if (productModel.name?.isEmpty() == true) {

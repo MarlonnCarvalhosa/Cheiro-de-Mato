@@ -4,12 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemMonthBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemProductCartBinding
+import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.view.home.OrdersAdapter
 
 class ItemsCartAdapter(
@@ -22,11 +24,10 @@ class ItemsCartAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ProductModel) {
             item.let {
-                if (order?.status == "Finalizado") binding.btnTrash.visibility = View.GONE
+                if (order?.status == Constants.STATUS_FINISH) binding.btnTrash.visibility = View.GONE
                 binding.textProductName.text = it.name
                 binding.textAmount.text = it.amount.toString()
                 binding.textPrice.text = "R$ ${it.price}"
-                binding.btnTrash.setOnClickListener { onClickListener(item) }
             }
         }
     }
@@ -38,7 +39,9 @@ class ItemsCartAdapter(
 
     override fun onBindViewHolder(holder: ItemsCartAdapter.ViewHolder, position: Int) {
         holder.bind(data[position])
-
+        holder.itemView.findViewById<View>(R.id.btn_trash).setOnClickListener {
+            onClickListener(data[position])
+        }
     }
 
     override fun getItemCount(): Int = data.size

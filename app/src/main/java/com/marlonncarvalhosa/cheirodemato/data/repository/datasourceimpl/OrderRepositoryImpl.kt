@@ -13,14 +13,30 @@ import kotlinx.coroutines.tasks.await
 
 class OrderRepositoryImpl: OrderRepository {
     private val db = FirebaseFirestore.getInstance()
-    override suspend fun getAllOrders(): Flow<List<OrderModel>> = flow {
-        val querySnapshot = db.collection(Constants.ORDERS).get().await()
+    override suspend fun getOrders(): Flow<List<OrderModel>> = flow {
+        try {
+            db.collection(Constants.ORDERS)
+                .get()
+                .await()
+            val querySnapshot = db.collection(Constants.ORDERS).get().await()
+            emit(querySnapshot.toObjects(OrderModel::class.java))
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Error get order", e)
+            throw e
+        }
+    }
 
-        if (!querySnapshot.isEmpty) {
-            val orders = querySnapshot.toObjects(OrderModel::class.java)
-            emit(orders)
-        } else {
-            Log.d(ContentValues.TAG, "No documents found.")
+    override suspend fun getOrderById(id: String): Flow<OrderModel> = flow {
+        try {
+            db.collection(Constants.ORDERS)
+                .document(id)
+                .get()
+                .await()
+            val querySnapshot = db.collection(Constants.ORDERS).document().get().await()
+            querySnapshot.toObject(OrderModel::class.java)?.let { emit(it) }
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Error get order by id", e)
+            throw e
         }
     }
 
@@ -33,7 +49,7 @@ class OrderRepositoryImpl: OrderRepository {
             val documentReference = db.collection(Constants.ORDERS).document(id)
             emit(documentReference)
         } catch (e: Exception) {
-            Log.e(ContentValues.TAG, "Error adding order", e)
+            Log.e(ContentValues.TAG, "Error new order", e)
             throw e
         }
     }
@@ -47,7 +63,21 @@ class OrderRepositoryImpl: OrderRepository {
             val documentReference = db.collection(Constants.ORDERS).document(id)
             emit(documentReference)
         } catch (e: Exception) {
-            Log.e(ContentValues.TAG, "Error adding order", e)
+            Log.e(ContentValues.TAG, "Error update order", e)
+            throw e
+        }
+    }
+
+    override suspend fun deleteOrder(id: String): Flow<DocumentReference> = flow {
+        try {
+            db.collection(Constants.ORDERS)
+                .document(id)
+                .delete()
+                .await()
+            val documentReference = db.collection(Constants.ORDERS).document(id)
+            emit(documentReference)
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Error delete order", e)
             throw e
         }
     }

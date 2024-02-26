@@ -18,7 +18,7 @@ import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentHomeBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
-import com.marlonncarvalhosa.cheirodemato.util.OrderDialog
+import com.marlonncarvalhosa.cheirodemato.view.order.OrderDialog
 import com.marlonncarvalhosa.cheirodemato.util.OrderDialogCommand
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import com.marlonncarvalhosa.cheirodemato.util.toFormattedDate
@@ -75,12 +75,13 @@ class HomeFragment : Fragment() {
                 }
                 is OrderViewState.SuccessNewOrder -> {
                     orderViewModel.getAllOrders()
-                    orderDialog?.dismiss()
+                    orderDialog?.clearTextFields()
                 }
                 is OrderViewState.SuccessUpdateOrder -> {
                     orderViewModel.getAllOrders()
-                    orderDialog?.dismiss()
+                    orderDialog?.clearTextFields()
                 }
+                is OrderViewState.SuccessDeleteOrder -> {}
                 is OrderViewState.Error -> {
                     binding?.root?.showSnackbarRed(viewState.errorMessage)
                 }
@@ -148,8 +149,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupView() {
-        val includeAdmin = binding?.includeAdmin
-
         binding?.includeAdmin?.textMonth?.text = dateModel.monthName?.capitalize()
 
         if (hide) {

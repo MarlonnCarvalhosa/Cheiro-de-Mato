@@ -61,4 +61,19 @@ class OrderViewModel(
                 }
         }
     }
+
+    fun deleteOrder(id: String) {
+        viewModelScope.launch {
+            orderUseCase.deleteOrder(id)
+                .onStart {
+                    _orderViewState.value = OrderViewState.Loading
+                }
+                .catch { error ->
+                    _orderViewState.value = OrderViewState.Error(error.message.toString())
+                }
+                .collect {
+                    _orderViewState.value = OrderViewState.SuccessDeleteOrder
+                }
+        }
+    }
 }
