@@ -48,7 +48,7 @@
             android:layout_height="14dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_button_radius_10"
-            android:backgroundTint="#81768F32"
+            android:backgroundTint="@color/status_green"
             app:layout_constraintStart_toStartOf="@+id/text_product_name"
             app:layout_constraintTop_toBottomOf="@+id/text_product_name" />
 
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:includeFontPadding="false"
-            android:text="Quantidade:"
+            android:text="Estoque inicial:"
             android:textSize="11sp"
             app:fontFamily="@font/poppins"
             app:layout_constraintBottom_toBottomOf="@+id/view1"
@@ -77,6 +77,30 @@
             app:layout_constraintBottom_toBottomOf="@+id/view1"
             app:layout_constraintStart_toEndOf="@+id/text_layout_amount"
             app:layout_constraintTop_toTopOf="@+id/view1" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="6dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_button_radius_10"
+            android:backgroundTint="@color/status_green"
+            app:layout_constraintStart_toStartOf="@+id/text_product_name"
+            app:layout_constraintTop_toBottomOf="@+id/view1" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_layout_percentage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:includeFontPadding="false"
+            android:layout_marginEnd="20dp"
+            android:textSize="11sp"
+            app:fontFamily="@font/poppins"
+            app:layout_constraintBottom_toBottomOf="@+id/view2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/view2"
+            app:layout_constraintTop_toTopOf="@+id/view2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

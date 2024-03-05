@@ -1,24 +1,21 @@
 package com.marlonncarvalhosa.cheirodemato.view.order
 
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderBinding
-import com.marlonncarvalhosa.cheirodemato.util.Constants
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
+import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class OrderFragment : Fragment() {
 
     private var binding: FragmentOrderBinding? = null
-    private val db = Firebase.firestore
+    private val viewModel: OrderViewModel by viewModel()
     private val listOrders = mutableListOf<OrderModel>()
 
     override fun onCreateView(
@@ -30,8 +27,9 @@ class OrderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getAllOrders()
+        observerOrders()
         onClick()
-        getAll()
     }
 
     private fun onClick() {
@@ -40,27 +38,33 @@ class OrderFragment : Fragment() {
         }
     }
 
-    private fun getAll() {
-        db.collection(Constants.ORDERS)
-            .get()
-            .addOnSuccessListener { result ->
-                listOrders.clear()
-                listOrders.addAll(result.toObjects(OrderModel::class.java))
-                val list = mutableListOf<String>()
-                listOrders.forEach {  f ->
-                    f.monthName?.let { list.add(it) }
+    private fun observerOrders() {
+        viewModel.orderViewState.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is OrderViewState.Loading -> {}
+                is OrderViewState.SuccessGetAllOrders -> {
+                    listOrders.clear()
+                    listOrders.addAll(viewState.orders)
+                    val list = mutableListOf<String>()
+                    listOrders.forEach {  f ->
+                        f.monthName?.let { list.add(it) }
+                    }
+                    initListOrdersByMonth(list, listOrders)
+                    setupLayout(listOrders)
                 }
-                initListOrdersByMonth(list, listOrders)
-                setupLayout(listOrders)
-                Log.d("ORDERRR", Gson().toJson(list.distinct().asReversed()))
+                is OrderViewState.SuccessGetOrderById -> {}
+                is OrderViewState.SuccessNewOrder -> {}
+                is OrderViewState.SuccessUpdateOrder -> {}
+                is OrderViewState.SuccessDeleteOrder -> {}
+                is OrderViewState.Error -> {
+                    binding?.root?.showSnackbarRed(viewState.errorMessage)
+                }
             }
-            .addOnFailureListener { exception ->
-                Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-            }
+        }
     }
 
     private fun setupLayout(list: MutableList<OrderModel>) {
-        binding?.textValue?.text = "R$ ${String.format("%.2f", list.sumByDouble { it.totalValue!! })}"
+        binding?.textValue?.text = list.sumByDouble { it.totalValue }.formatAsCurrency()
     }
 
     private fun initListOrdersByMonth(

@@ -25,6 +25,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_close_24"
+            android:background="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="@+id/text_title"
+            app:layout_constraintEnd_toEndOf="@+id/input_name_layout"
+            app:layout_constraintTop_toTopOf="@+id/text_title" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_layout_name"
             android:layout_width="wrap_content"

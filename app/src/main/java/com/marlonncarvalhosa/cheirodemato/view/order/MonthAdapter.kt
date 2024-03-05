@@ -11,6 +11,7 @@ import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemMonthBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemOrderBinding
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.view.home.OrdersAdapter
 
 class MonthAdapter(
@@ -36,7 +37,7 @@ class MonthAdapter(
     override fun onBindViewHolder(holder: MonthAdapter.ViewHolder, position: Int) {
         holder.bind(name[position])
         val finishList = data.filter { f -> f.monthName == name[position] }
-        holder.itemView.findViewById<AppCompatTextView>(R.id.text_value).text = "R$ ${finishList.sumByDouble { it.totalValue!! }}"
+        holder.itemView.findViewById<AppCompatTextView>(R.id.text_value).text = finishList.sumByDouble { it.totalValue }.formatAsCurrency()
         holder.itemView.findViewById<RecyclerView>(R.id.recycler_order).apply {
             adapter = OrdersAdapter(finishList, ::onClickOrders)
         }

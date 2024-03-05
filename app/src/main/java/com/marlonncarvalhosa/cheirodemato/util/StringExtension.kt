@@ -1,7 +1,11 @@
 package com.marlonncarvalhosa.cheirodemato.util
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.util.Validation.isEmailValid
+import java.text.Normalizer
+import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -43,6 +47,27 @@ fun String.isValidQuantity(): Boolean {
 
 }
 
+fun String.removeAccents(): String {
+    val normalizedString = Normalizer.normalize(this, Normalizer.Form.NFD)
+    return Regex("[^\\p{ASCII}]").replace(normalizedString, "")
+}
+
+fun Int.toKilograms(): Double {
+    return try {
+        val grams = this
+        val kilograms = grams / 1000.0
+        kilograms
+    } catch (e: NumberFormatException) {
+        e.printStackTrace()
+        0.0
+    }
+}
+
+fun Double.formatAsCurrency(): String {
+    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    return currencyFormat.format(this)
+}
+
 @SuppressLint("SimpleDateFormat")
 fun String.convertDateFormat(initDateFormat: String, endDateFormat: String): String {
     return try {
@@ -54,6 +79,21 @@ fun String.convertDateFormat(initDateFormat: String, endDateFormat: String): Str
     } catch (e: ParseException) {
         e.printStackTrace()
         "Erro ao obter data"
+    }
+}
+
+fun calculatePercentageStock(amount: Int?, amountInitStock: Int?): Int {
+    val percentage = (amountInitStock?.toDouble()?.let { amount?.toDouble()?.div(it) })?.times(100)
+
+    return when {
+        percentage != null -> when {
+            percentage >= 50.0 -> R.color.status_green
+            percentage >= 25.0 -> R.color.status_yellow
+            percentage >= 10.0 -> R.color.status_orange
+            percentage >= 5.0 -> R.color.status_red
+            else -> R.color.status_red
+        }
+        else -> Color.WHITE
     }
 }
 
