@@ -16,6 +16,7 @@ import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.DialogNewOrderBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.OrderDialogCommand
+import com.marlonncarvalhosa.cheirodemato.util.removeAccents
 import com.marlonncarvalhosa.cheirodemato.util.toFormattedDate
 import java.util.Calendar
 import java.util.TimeZone
@@ -55,17 +56,17 @@ class OrderDialog(private val context: Context) {
 
 
         dialogBinding.btnSave.setOnClickListener {
-            val name = dialogBinding.editName.text.toString()
             val price = dialogBinding.editPrice.text.toString()
             val amount = dialogBinding.editAmount.text.toString().toIntOrNull() ?: 0
 
             selectedProduct?.let {
                 validation(ProductModel(
                     id = it.id,
-                    name = name,
+                    name = it.name,
                     type = it.type,
                     amount = amount,
-                    price = price.replace("R$", "").replace(".", "").replace(",", ".").toDoubleOrNull() ?: 0.0,
+                    totalPrice = price.replace("R$", "").replace(".", "").replace(",", ".").toDoubleOrNull() ?: 0.0,
+                    price = it.price,
                     dia = dateModel.day,
                     mes = dateModel.month,
                     ano = dateModel.year
@@ -142,7 +143,7 @@ class OrderDialog(private val context: Context) {
             dialogBinding.inputNameLayout.error = null
         }
 
-        if (productModel.price?.toString()?.isEmpty() == true) {
+        if (productModel.totalPrice?.toString()?.isEmpty() == true) {
             dialogBinding.inputPriceLayout.error =
                 context.getString(R.string.error_empty_price)
         } else {

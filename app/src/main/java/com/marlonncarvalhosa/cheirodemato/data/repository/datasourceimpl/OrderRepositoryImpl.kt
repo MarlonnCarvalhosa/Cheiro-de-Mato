@@ -28,14 +28,20 @@ class OrderRepositoryImpl: OrderRepository {
 
     override suspend fun getOrderById(id: String): Flow<OrderModel> = flow {
         try {
-            db.collection(Constants.ORDERS)
+            val documentSnapshot = db.collection(Constants.ORDERS)
                 .document(id)
                 .get()
                 .await()
-            val querySnapshot = db.collection(Constants.ORDERS).document().get().await()
-            querySnapshot.toObject(OrderModel::class.java)?.let { emit(it) }
+
+            val orderModel = documentSnapshot.toObject(OrderModel::class.java)
+            if (orderModel != null) {
+                emit(orderModel)
+            } else {
+                Log.e(ContentValues.TAG, "Documento não encontrado ou não pode ser convertido para OrderModel.")
+            }
+
         } catch (e: Exception) {
-            Log.e(ContentValues.TAG, "Error get order by id", e)
+            Log.e(ContentValues.TAG, "Erro ao obter pedido por ID", e)
             throw e
         }
     }

@@ -32,6 +32,21 @@ class OrderViewModel(
         }
     }
 
+    fun getOrderById(id: String) {
+        viewModelScope.launch {
+            orderUseCase.getOrderById(id)
+                .onStart {
+                    _orderViewState.value = OrderViewState.Loading
+                }
+                .catch { error ->
+                    _orderViewState.value = OrderViewState.Error(error.message.toString())
+                }
+                .collect {
+                    _orderViewState.value = OrderViewState.SuccessGetOrderById(it)
+                }
+        }
+    }
+
     fun newOrder(id: String, order: OrderModel) {
         viewModelScope.launch {
             orderUseCase.newOrder(id, order)

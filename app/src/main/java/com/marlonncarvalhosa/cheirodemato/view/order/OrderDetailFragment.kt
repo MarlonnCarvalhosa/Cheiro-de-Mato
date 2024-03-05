@@ -1,18 +1,14 @@
 package com.marlonncarvalhosa.cheirodemato.view.order
 
-import android.content.ContentValues
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderDetailBinding
@@ -28,10 +24,8 @@ class OrderDetailFragment : Fragment() {
 
     private var binding: FragmentOrderDetailBinding? = null
     private val orderViewModel: OrderViewModel by viewModel()
-    private val listOrders = mutableListOf<OrderModel>()
     private val listProduct = mutableListOf<ProductModel>()
     private val args: OrderDetailFragmentArgs by navArgs()
-    private val db = Firebase.firestore
     private var order: OrderModel? = null
 
     override fun onCreateView(
@@ -43,10 +37,9 @@ class OrderDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        orderViewModel.getAllOrders()
+        orderViewModel.getOrderById(args.orderModel.id.toString())
         observerOrders()
         onClick()
-        getAll()
     }
 
     private fun onClick() {
@@ -58,19 +51,7 @@ class OrderDetailFragment : Fragment() {
             hideKeyBoard(it)
         }
         binding?.btnFinish?.setOnClickListener {
-            val orderUpdate = hashMapOf(
-                Constants.ITEMS to listProduct,
-                Constants.STATUS to Constants.STATUS_FINISH
-            )
-            db.collection(Constants.ORDERS)
-                .document(order?.id.toString())
-                .update(orderUpdate as Map<String, Any>)
-                .addOnSuccessListener { result ->
-                    getAll()
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-                }
+            finishOrder()
         }
     }
 
@@ -79,10 +60,16 @@ class OrderDetailFragment : Fragment() {
             when (viewState) {
                 is OrderViewState.Loading -> {}
                 is OrderViewState.SuccessGetAllOrders -> {}
+                is OrderViewState.SuccessGetOrderById -> {
+                    listProduct.clear()
+                    order = viewState.order
+                    order?.items?.let { listProduct.addAll(it) }
+                    initListItems(listProduct, order)
+                    setupView(order)
+                }
                 is OrderViewState.SuccessNewOrder -> {}
                 is OrderViewState.SuccessUpdateOrder -> {
-                    //orderViewModel.getAllOrders()
-                    getAll()
+                    orderViewModel.getOrderById(order?.id.toString())
                 }
                 is OrderViewState.SuccessDeleteOrder -> {
                     findNavController().popBackStack()
@@ -92,23 +79,6 @@ class OrderDetailFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun getAll() {
-        db.collection("orders")
-            .get()
-            .addOnSuccessListener { result ->
-                listOrders.clear()
-                listProduct.clear()
-                listOrders.addAll(result.toObjects(OrderModel::class.java))
-                order = listOrders.firstOrNull { f -> f.id == args.orderModel.id }
-                order?.items?.let { listProduct.addAll(it) }
-                initListItems(listProduct, order)
-                setupView(order)
-            }
-            .addOnFailureListener { exception ->
-                Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-            }
     }
 
     private fun setupView(order: OrderModel?) {
@@ -148,7 +118,7 @@ class OrderDetailFragment : Fragment() {
 
     private fun calculateChange(actualOrder: OrderModel?) {
         val rawText = binding?.editChange?.text.toString()
-        val value = rawText.replace("R$", "").replace(".", "").replace(",", ".").filterNot { it.isWhitespace() }?.toDoubleOrNull()
+        val value = rawText.replace("R$", "").replace(".", "").replace(",", ".").filterNot { it.isWhitespace() }.toDoubleOrNull()
 
         if (value != null && value != actualOrder?.totalValue) {
             binding?.textChangeValue?.text = actualOrder?.totalValue?.let { value.minus(it).formatAsCurrency() }
@@ -179,7 +149,15 @@ class OrderDetailFragment : Fragment() {
     private fun updateOrder(productModel: ProductModel) {
         val orderUpdate = hashMapOf(
             Constants.ITEMS to listProduct,
-            Constants.TOTAL_VALUE to productModel.price?.let { order?.totalValue?.minus(it) }
+            Constants.TOTAL_VALUE to productModel.totalPrice?.let { order?.totalValue?.minus(it) }
+        )
+        orderViewModel.updateOrder(order?.id.toString(), orderUpdate as Map<String, Any>)
+    }
+
+    private fun finishOrder() {
+        val orderUpdate = hashMapOf(
+            Constants.ITEMS to listProduct,
+            Constants.STATUS to Constants.STATUS_FINISH
         )
         orderViewModel.updateOrder(order?.id.toString(), orderUpdate as Map<String, Any>)
     }

@@ -10,6 +10,10 @@ class OrderUseCase(private val orderRepository: OrderRepository) {
         return orderRepository.getOrders()
     }
 
+    suspend fun getOrderById(id: String): Flow<OrderModel> {
+        return orderRepository.getOrderById(id)
+    }
+
     suspend fun newOrder(id: String, order: OrderModel): Flow<DocumentReference> {
         return orderRepository.newOrder(id, order)
     }

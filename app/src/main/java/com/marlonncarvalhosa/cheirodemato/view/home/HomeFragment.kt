@@ -1,8 +1,6 @@
 package com.marlonncarvalhosa.cheirodemato.view.home
 
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
@@ -20,28 +17,30 @@ import com.marlonncarvalhosa.cheirodemato.databinding.FragmentHomeBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.view.order.OrderDialog
 import com.marlonncarvalhosa.cheirodemato.util.OrderDialogCommand
+import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import com.marlonncarvalhosa.cheirodemato.util.toFormattedDate
 import com.marlonncarvalhosa.cheirodemato.view.main.MainActivity
 import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewModel
 import com.marlonncarvalhosa.cheirodemato.view.order.OrderViewState
 import com.marlonncarvalhosa.cheirodemato.view.products.ProductAdapter
+import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewModel
+import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 import java.util.TimeZone
-
 
 class HomeFragment : Fragment() {
 
     private var binding: FragmentHomeBinding? = null
     private val orderViewModel: OrderViewModel by viewModel()
+    private val productViewModel: ProductViewModel by viewModel()
     private val listOrders = mutableListOf<OrderModel>()
     private val listOProducts = mutableListOf<ProductModel>()
     private var orderDialog: OrderDialog? = null
     private val calendar = Calendar.getInstance(TimeZone.getDefault())
     private val dateModel = calendar.toFormattedDate()
     private var auth: FirebaseAuth? = null
-    private val db = Firebase.firestore
     private var hide = true
 
     override fun onCreateView(
@@ -58,9 +57,10 @@ class HomeFragment : Fragment() {
         auth = Firebase.auth
         orderViewModel.getAllOrders()
         observerOrders()
+        productViewModel.getProducts()
+        observerProduct()
         observerOrderDialogCommand()
         onClick()
-        getAllProducts()
     }
 
     private fun observerOrders() {
@@ -73,6 +73,7 @@ class HomeFragment : Fragment() {
                     initListOrder(listOrders)
                     setupView()
                 }
+                is OrderViewState.SuccessGetOrderById -> {}
                 is OrderViewState.SuccessNewOrder -> {
                     orderViewModel.getAllOrders()
                     orderDialog?.clearTextFields()
@@ -89,6 +90,25 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun observerProduct() {
+        productViewModel.productViewState.observe(viewLifecycleOwner) { viewState ->
+            when(viewState) {
+                is ProductViewState.Loading -> {}
+                is ProductViewState.SuccessGetProducts -> {
+                    listOProducts.clear()
+                    listOProducts.addAll(viewState.Products)
+                    initListProduct(listOProducts)
+                }
+                is ProductViewState.SuccessNewProduct -> {}
+                is ProductViewState.SuccessUpdateProduct -> {}
+                is ProductViewState.SuccessDeleteProduct -> {}
+                is ProductViewState.Error -> {
+                    binding?.root?.showSnackbarRed(viewState.errorMessage)
+                }
+            }
+        }
+    }
+
     private fun observerOrderDialogCommand() {
         orderDialog?.orderCommand?.observe(viewLifecycleOwner) { viewCommand ->
             when(viewCommand) {
@@ -97,19 +117,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun getAllProducts() {
-        db.collection(Constants.PRODUCTS)
-            .get()
-            .addOnSuccessListener { result ->
-                listOProducts.clear()
-                listOProducts.addAll(result.toObjects(ProductModel::class.java))
-                initListProduct(listOProducts)
-            }
-            .addOnFailureListener { exception ->
-                Log.d(ContentValues.TAG, "Error getting documents: ", exception)
-            }
     }
 
     private fun onClick() {
@@ -171,7 +178,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun displayTotalValue() {
-        binding?.includeAdmin?.textValue?.text = calculateTotalValue().let { "R$ ${String.format("%.2f", it)}" }
+        binding?.includeAdmin?.textValue?.text = calculateTotalValue().let { it.formatAsCurrency() }
     }
 
     private fun calculateTotalValue(): Double {
@@ -196,12 +203,12 @@ class HomeFragment : Fragment() {
         val existingProduct = updatedItems.find { it.id == productModel.id }
         if (existingProduct != null) {
             existingProduct.amount = productModel.amount?.let { existingProduct.amount?.plus(it) }
-            existingProduct.price = productModel.price?.let { existingProduct.price?.plus(it) }
+            existingProduct.totalPrice = productModel.totalPrice?.let { existingProduct.totalPrice?.plus(it) }
         } else {
             updatedItems.add(productModel)
         }
 
-        val totalValue = updatedItems.sumByDouble { it.price ?: 0.0 }
+        val totalValue = updatedItems.sumByDouble { it.totalPrice ?: 0.0 }
 
         val orderUpdate = hashMapOf(
             Constants.ITEMS to updatedItems,
@@ -219,7 +226,7 @@ class HomeFragment : Fragment() {
             id = newOrderId,
             status = Constants.STATUS_WAITING,
             note = "",
-            totalValue = productModel.price ?: 0.0,
+            totalValue = productModel.totalPrice ?: 0.0,
             items = newProduct,
             day = dateModel.day,
             month = dateModel.month,

@@ -3,17 +3,13 @@ package com.marlonncarvalhosa.cheirodemato.view.order
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
-import com.marlonncarvalhosa.cheirodemato.databinding.ItemMonthBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemProductCartBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
-import com.marlonncarvalhosa.cheirodemato.view.home.OrdersAdapter
 
 class ItemsCartAdapter(
     private val data: List<ProductModel>,
@@ -28,7 +24,7 @@ class ItemsCartAdapter(
                 if (order?.status == Constants.STATUS_FINISH) binding.btnTrash.visibility = View.GONE
                 binding.textProductName.text = it.name
                 binding.textAmount.text = it.amount.toString()
-                binding.textPrice.text = it.price?.formatAsCurrency()
+                binding.textPrice.text = it.totalPrice?.formatAsCurrency()
             }
         }
     }

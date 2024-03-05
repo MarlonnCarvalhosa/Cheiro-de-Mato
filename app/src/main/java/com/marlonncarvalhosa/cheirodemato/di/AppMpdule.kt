@@ -1,13 +1,13 @@
 package com.marlonncarvalhosa.cheirodemato.di
 
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.marlonncarvalhosa.cheirodemato.data.repository.datasource.AuthRepository
 import com.marlonncarvalhosa.cheirodemato.data.repository.datasource.OrderRepository
+import com.marlonncarvalhosa.cheirodemato.data.repository.datasource.ProductRepository
 import com.marlonncarvalhosa.cheirodemato.data.repository.datasourceimpl.AuthRepositoryImpl
 import com.marlonncarvalhosa.cheirodemato.data.repository.datasourceimpl.OrderRepositoryImpl
+import com.marlonncarvalhosa.cheirodemato.data.repository.datasourceimpl.ProductRepositoryImpl
 import com.marlonncarvalhosa.cheirodemato.usecase.OrderUseCase
+import com.marlonncarvalhosa.cheirodemato.usecase.ProductUseCase
 import com.marlonncarvalhosa.cheirodemato.usecase.SignInUseCase
 import com.marlonncarvalhosa.cheirodemato.view.home.HomeViewModel
 import com.marlonncarvalhosa.cheirodemato.view.login.AuthViewModel
@@ -24,7 +24,7 @@ val viewModelModule = module{
         HomeViewModel()
     }
     viewModel {
-        ProductViewModel()
+        ProductViewModel(productUseCase = get())
     }
     viewModel {
         OrderViewModel(orderUseCase = get())
@@ -38,6 +38,9 @@ val repositoryModule = module{
     single<OrderRepository> {
         OrderRepositoryImpl()
     }
+    single<ProductRepository> {
+        ProductRepositoryImpl()
+    }
 }
 
 val useCase = module {
@@ -46,6 +49,9 @@ val useCase = module {
     }
     single {
         OrderUseCase(orderRepository = get())
+    }
+    single {
+        ProductUseCase(productRepository = get())
     }
 }
 

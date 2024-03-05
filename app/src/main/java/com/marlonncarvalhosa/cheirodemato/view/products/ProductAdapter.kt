@@ -1,10 +1,16 @@
 package com.marlonncarvalhosa.cheirodemato.view.products
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemProductBinding
+import com.marlonncarvalhosa.cheirodemato.util.calculatePercentageStock
+import com.marlonncarvalhosa.cheirodemato.util.toKilograms
 
 class ProductAdapter(
     private val data: List<ProductModel>,
@@ -15,7 +21,7 @@ class ProductAdapter(
         fun bind(item: ProductModel) {
             item.let {
                 binding.textProductName.text = it.name
-                binding.textAmount.text = it.amount.toString()
+                binding.textAmount.text = "${it.amountInitStock?.toKilograms()} Kg"
             }
         }
     }
@@ -27,6 +33,11 @@ class ProductAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(data[position])
+        val amount = data[position].amount
+        val amountInitStock = data[position].amountInitStock
+        val color = calculatePercentageStock(amount, amountInitStock)
+        holder.itemView.findViewById<AppCompatTextView>(R.id.text_layout_percentage).text = "Estoque atual: ${amount?.toKilograms()} Kg"
+        holder.itemView.findViewById<View>(R.id.view2).backgroundTintList = ContextCompat.getColorStateList(holder.itemView.context, color)
     }
 
     override fun getItemCount(): Int = data.size

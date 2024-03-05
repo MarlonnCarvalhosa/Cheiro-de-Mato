@@ -1,16 +1,49 @@
 package com.marlonncarvalhosa.cheirodemato.view.products
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
+import com.marlonncarvalhosa.cheirodemato.usecase.ProductUseCase
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 
-class ProductViewModel: ViewModel() {
+class ProductViewModel(
+    private val productUseCase: ProductUseCase
+): ViewModel() {
 
-    fun listProduct():MutableList<ProductModel>{
-        val list = mutableListOf<ProductModel>()
-        list.add(ProductModel(1,"Produto 2","Peso", 10000, 50.00, "06", "23", "23"))
-        list.add(ProductModel(2,"Produto 3","Peso", 3000, 50.00, "06", "23", "23"))
-        list.add(ProductModel(3,"Produto 4","Unidade", 4, 50.00, "06", "23", "23"))
-        list.add(ProductModel(3,"Produto 4","Unidade", 4, 50.00, "06", "23", "23"))
-        return list
+    private val _productViewState = MutableLiveData<ProductViewState>()
+    val productViewState: LiveData<ProductViewState> = _productViewState
+
+    fun getProducts() {
+        viewModelScope.launch {
+            productUseCase.getProducts()
+                .onStart {
+                    _productViewState.value = ProductViewState.Loading
+                }
+                .catch { error ->
+                    _productViewState.value = ProductViewState.Error(error.message.toString())
+                }
+                .collect {
+                    _productViewState.value = ProductViewState.SuccessGetProducts(it)
+                }
+        }
+    }
+
+    fun newProduct(id: String, product: ProductModel) {
+        viewModelScope.launch {
+            productUseCase.newProduct(id, product)
+                .onStart {
+                    _productViewState.value = ProductViewState.Loading
+                }
+                .catch { error ->
+                    _productViewState.value = ProductViewState.Error(error.message.toString())
+                }
+                .collect {
+                    _productViewState.value = ProductViewState.SuccessNewProduct
+                }
+        }
     }
 }

@@ -10,7 +10,7 @@ object Constants {
     const val ITEMS  = "items"
     const val TOTAL_VALUE  = "totalValue"
     const val STATUS  = "status"
-    const val WEIGHT  = "Weight"
+    const val WEIGHT  = "Peso"
 
     //Mask
     const val FORMAT_CPF = "###.###.###-##"
