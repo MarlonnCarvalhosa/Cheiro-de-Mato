@@ -1,5 +1,7 @@
 package com.marlonncarvalhosa.cheirodemato.data.model
 
+import java.io.Serializable
+
 data class ProductModel(
     val id: Int? = 0,
     val name: String? = "",
@@ -11,7 +13,7 @@ data class ProductModel(
     val dia: String? = "",
     val mes: String? = "",
     val ano: String? = ""
-)
+): Serializable
 {
     override fun toString(): String {
         super.toString()

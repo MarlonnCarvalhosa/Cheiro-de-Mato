@@ -13,6 +13,7 @@ import com.marlonncarvalhosa.cheirodemato.databinding.FragmentProductsBinding
 import com.marlonncarvalhosa.cheirodemato.util.ProductDialogCommand
 import com.marlonncarvalhosa.cheirodemato.util.removeAccents
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
+import com.marlonncarvalhosa.cheirodemato.view.home.HomeFragmentDirections
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ProductsFragment : Fragment() {
@@ -94,8 +95,12 @@ class ProductsFragment : Fragment() {
 
     private fun initListProducts(listProduct: MutableList<ProductModel>) {
         binding?.recyclerProducts?.apply {
-            adapter = ProductAdapter(listProduct.asReversed())
+            adapter = ProductAdapter(listProduct.asReversed(), ::onClickProduct)
         }
+    }
+
+    private fun onClickProduct(productModel: ProductModel) {
+        findNavController().navigate(ProductsFragmentDirections.actionProductsFragmentToProductDetailFragment(productModel))
     }
 
     private fun newProduct(productModel: ProductModel) {
