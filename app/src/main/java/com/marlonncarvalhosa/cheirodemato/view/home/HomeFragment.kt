@@ -150,9 +150,13 @@ class HomeFragment : Fragment() {
 
     private fun initListProduct(listOProducts: MutableList<ProductModel>) {
         binding?.includeAdmin?.recyclerProducts?.apply {
-            val mAdapter = ProductAdapter(listOProducts.asReversed().take(3))
+            val mAdapter = ProductAdapter(listOProducts.asReversed().take(3), ::onCLickProduct)
             adapter = mAdapter
         }
+    }
+
+    private fun onCLickProduct(model: ProductModel) {
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(model))
     }
 
     private fun setupView() {
@@ -178,7 +182,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun displayTotalValue() {
-        binding?.includeAdmin?.textValue?.text = calculateTotalValue().let { it.formatAsCurrency() }
+        binding?.includeAdmin?.textValue?.text = calculateTotalValue().formatAsCurrency()
     }
 
     private fun calculateTotalValue(): Double {
