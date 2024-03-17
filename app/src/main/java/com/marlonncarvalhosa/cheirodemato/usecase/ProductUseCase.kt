@@ -13,4 +13,8 @@ class ProductUseCase(private val productRepository: ProductRepository) {
     suspend fun newProduct(id: String, product: ProductModel): Flow<DocumentReference> {
         return productRepository.newProduct(id, product)
     }
+
+    suspend fun updateProduct(id: String, product: HashMap<String, Int?>): Flow<ProductModel> {
+        return productRepository.updateProduct(id, product)
+    }
 }

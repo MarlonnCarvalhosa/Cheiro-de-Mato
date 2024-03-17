@@ -14,6 +14,7 @@ import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderDetailBinding
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentProductDetailBinding
+import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.calculatePercentageStock
 import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
@@ -83,9 +84,14 @@ class ProductDetailFragment : Fragment() {
         val statusStockColor = calculatePercentageStock(productModel?.amount, productModel?.amountInitStock)
         binding?.textName?.text = productModel?.name
         binding?.textPrice?.text = productModel?.price?.formatAsCurrency()
-        binding?.textLayoutAmount?.text = "Estoque inicial: ${productModel?.amountInitStock?.toKilograms()} Kg"
-        binding?.textLayoutActualAmount?.text = "Estoque atual:  ${productModel?.amount?.toKilograms()} Kg"
         binding?.view2?.backgroundTintList = ContextCompat.getColorStateList(requireContext(), statusStockColor)
+        if (productModel?.type == Constants.WEIGHT) {
+            binding?.textLayoutAmount?.text = "Estoque inicial:  ${productModel?.amountInitStock?.toKilograms()} Kg"
+            binding?.textLayoutActualAmount?.text = "Estoque atual:  ${productModel?.amount?.toKilograms()} Kg"
+        } else {
+            binding?.textLayoutAmount?.text = "Estoque inicial: ${productModel?.amountInitStock} Unidades"
+            binding?.textLayoutActualAmount?.text = "Estoque atual:  ${productModel?.amount} Unidades"
+        }
     }
 
     private fun initListOrder(listOrders: MutableList<OrderModel>) {

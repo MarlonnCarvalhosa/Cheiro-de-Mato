@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.data.repository.datasource.ProductRepository
 import com.marlonncarvalhosa.cheirodemato.util.Constants
@@ -35,6 +36,20 @@ class ProductRepositoryImpl: ProductRepository {
                 .await()
             val documentReference = db.collection(Constants.PRODUCTS).document(id)
             emit(documentReference)
+        } catch (e: Exception) {
+            Log.e(ContentValues.TAG, "Error new product", e)
+            throw e
+        }
+    }
+
+    override suspend fun updateProduct(id: String, product: HashMap<String, Int?>): Flow<ProductModel> = flow {
+        try {
+            db.collection(Constants.PRODUCTS)
+                .document(id)
+                .update(product as Map<String, Any>)
+                .await()
+            val documentReference = db.collection(Constants.PRODUCTS).document(id).get().await()
+            documentReference.toObject(ProductModel::class.java)?.let { emit(it) }
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, "Error new product", e)
             throw e

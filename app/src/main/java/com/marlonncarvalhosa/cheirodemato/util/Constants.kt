@@ -11,6 +11,7 @@ object Constants {
     const val TOTAL_VALUE  = "totalValue"
     const val STATUS  = "status"
     const val WEIGHT  = "Peso"
+    const val AMOUNT  = "amount"
 
     //Mask
     const val FORMAT_CPF = "###.###.###-##"

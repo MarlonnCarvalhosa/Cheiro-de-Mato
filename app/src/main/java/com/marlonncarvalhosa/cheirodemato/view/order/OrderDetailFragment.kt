@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderDetailBinding
@@ -17,6 +18,10 @@ import com.marlonncarvalhosa.cheirodemato.util.MoneyTextWatcher
 import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.util.hideKeyBoard
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
+import com.marlonncarvalhosa.cheirodemato.util.viewInvisible
+import com.marlonncarvalhosa.cheirodemato.util.viewVisible
+import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewModel
+import com.marlonncarvalhosa.cheirodemato.view.products.ProductViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
@@ -24,9 +29,12 @@ class OrderDetailFragment : Fragment() {
 
     private var binding: FragmentOrderDetailBinding? = null
     private val orderViewModel: OrderViewModel by viewModel()
+    private val productViewModel: ProductViewModel by viewModel()
     private val listProduct = mutableListOf<ProductModel>()
     private val args: OrderDetailFragmentArgs by navArgs()
     private var order: OrderModel? = null
+    private var completedUpdatesCount = 0
+    private var totalUpdatesCount = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +47,7 @@ class OrderDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         orderViewModel.getOrderById(args.orderModel.id.toString())
         observerOrders()
+        observerProduct()
         onClick()
     }
 
@@ -51,7 +60,8 @@ class OrderDetailFragment : Fragment() {
             hideKeyBoard(it)
         }
         binding?.btnFinish?.setOnClickListener {
-            finishOrder()
+            showProgress()
+            updateProduct()
         }
     }
 
@@ -70,11 +80,35 @@ class OrderDetailFragment : Fragment() {
                 is OrderViewState.SuccessNewOrder -> {}
                 is OrderViewState.SuccessUpdateOrder -> {
                     orderViewModel.getOrderById(order?.id.toString())
+                    hideProgress()
                 }
                 is OrderViewState.SuccessDeleteOrder -> {
                     findNavController().popBackStack()
+                    hideProgress()
                 }
                 is OrderViewState.Error -> {
+                    hideProgress()
+                    binding?.root?.showSnackbarRed(viewState.errorMessage)
+                }
+            }
+        }
+    }
+
+    private fun observerProduct() {
+        productViewModel.productViewState.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is ProductViewState.Loading -> {}
+                is ProductViewState.SuccessGetProducts -> {}
+                is ProductViewState.SuccessNewProduct -> {}
+                is ProductViewState.SuccessUpdateProduct -> {
+                    completedUpdatesCount++
+                    if (completedUpdatesCount == totalUpdatesCount) {
+                        finishOrder()
+                    }
+                }
+                is ProductViewState.SuccessDeleteProduct -> {}
+                is ProductViewState.Error -> {
+                    hideProgress()
                     binding?.root?.showSnackbarRed(viewState.errorMessage)
                 }
             }
@@ -154,12 +188,33 @@ class OrderDetailFragment : Fragment() {
         orderViewModel.updateOrder(order?.id.toString(), orderUpdate as Map<String, Any>)
     }
 
+    private fun updateProduct() {
+        totalUpdatesCount = listProduct.size
+        completedUpdatesCount = 0
+        listProduct.forEach { productModel ->
+            val productUpdate = hashMapOf(
+                Constants.AMOUNT to productModel.amountBuy?.let { productModel.amount?.minus(it) }
+            )
+            productViewModel.updateProduct(productModel.id.toString(), productUpdate)
+        }
+    }
+
     private fun finishOrder() {
         val orderUpdate = hashMapOf(
             Constants.ITEMS to listProduct,
             Constants.STATUS to Constants.STATUS_FINISH
         )
         orderViewModel.updateOrder(order?.id.toString(), orderUpdate as Map<String, Any>)
+    }
+
+    private fun showProgress() {
+        binding?.progressBar?.viewVisible()
+        binding?.btnFinish?.text = ""
+    }
+
+    private fun hideProgress() {
+        binding?.progressBar?.viewInvisible()
+        binding?.btnFinish?.text = getString(R.string.text_finish_button)
     }
 
     override fun onDestroyView() {

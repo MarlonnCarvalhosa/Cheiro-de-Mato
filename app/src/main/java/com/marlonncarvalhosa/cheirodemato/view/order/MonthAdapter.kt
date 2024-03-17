@@ -16,8 +16,8 @@ import com.marlonncarvalhosa.cheirodemato.view.home.OrdersAdapter
 
 class MonthAdapter(
     private val name: List<String>,
-    private val data: List<OrderModel>
-    //private val onClickListener: (OrderModel) -> Unit
+    private val data: List<OrderModel>,
+    private val onClickListener: (OrderModel) -> Unit = {}
 ) : RecyclerView.Adapter<MonthAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemMonthBinding) :

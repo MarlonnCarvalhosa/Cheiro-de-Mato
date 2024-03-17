@@ -9,4 +9,6 @@ interface ProductRepository {
     suspend fun getProducts(): Flow<List<ProductModel>>
 
     suspend fun newProduct(id: String, product: ProductModel): Flow<DocumentReference>
+
+    suspend fun updateProduct(id: String, product: HashMap<String, Int?>): Flow<ProductModel>
 }

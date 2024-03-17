@@ -46,4 +46,19 @@ class ProductViewModel(
                 }
         }
     }
+
+    fun updateProduct(id: String, product: HashMap<String, Int?>) {
+        viewModelScope.launch {
+            productUseCase.updateProduct(id, product)
+                .onStart {
+                    _productViewState.value = ProductViewState.Loading
+                }
+                .catch { error ->
+                    _productViewState.value = ProductViewState.Error(error.message.toString())
+                }
+                .collect {
+                    _productViewState.value = ProductViewState.SuccessUpdateProduct
+                }
+        }
+    }
 }
