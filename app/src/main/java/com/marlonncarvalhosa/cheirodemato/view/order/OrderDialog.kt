@@ -64,7 +64,9 @@ class OrderDialog(private val context: Context) {
                     id = it.id,
                     name = it.name,
                     type = it.type,
-                    amount = amount,
+                    amountBuy = amount,
+                    amount = it.amount,
+                    amountInitStock = it.amountInitStock,
                     totalPrice = price.replace("R$", "").replace(".", "").replace(",", ".").toDoubleOrNull() ?: 0.0,
                     price = it.price,
                     dia = dateModel.day,
@@ -94,7 +96,24 @@ class OrderDialog(private val context: Context) {
             val textWatcher = object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    if (s.isNotEmpty()) {
+                        try {
+                            val amountInput = s.toString().toInt()
+                            if (amountInput > selectedProduct?.amount!!) {
+                                dialogBinding.inputAmountLayout.error =
+                                    context.getString(R.string.error_full_stock, selectedProduct?.amount?.toString())
+                            } else {
+                                dialogBinding.inputAmountLayout.error = null
+                            }
+                        } catch (e: NumberFormatException) {
+                            dialogBinding.inputAmountLayout.error =
+                                context.getString(R.string.error_empty_amount)
+                        }
+                    } else {
+                        dialogBinding.inputAmountLayout.error = null
+                    }
+                }
 
                 override fun afterTextChanged(s: Editable) {
                     updateFinalPrice(s.toString())
@@ -153,6 +172,19 @@ class OrderDialog(private val context: Context) {
         if (productModel.amount?.toString()?.isEmpty() == true) {
             dialogBinding.inputAmountLayout.error =
                 context.getString(R.string.error_empty_amount)
+        } else {
+            dialogBinding.inputAmountLayout.error = null
+        }
+        if (productModel.amountBuy!! > productModel.amount!!) {
+            dialogBinding.inputAmountLayout.error =
+                context.getString(R.string.error_full_stock, productModel.amount?.toString())
+        } else {
+            dialogBinding.inputAmountLayout.error = null
+        }
+
+        if (productModel.amountBuy!! <= 0) {
+            dialogBinding.inputAmountLayout.error =
+                context.getString(R.string.error_zero)
         } else {
             dialogBinding.inputAmountLayout.error = null
         }

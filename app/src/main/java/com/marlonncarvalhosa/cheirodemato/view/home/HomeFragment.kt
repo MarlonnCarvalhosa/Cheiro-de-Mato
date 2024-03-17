@@ -140,7 +140,7 @@ class HomeFragment : Fragment() {
 
     private fun initListOrder(listOrders: MutableList<OrderModel>) {
         binding?.includeAdmin?.recyclerLastOrder?.apply {
-            adapter = OrdersAdapter(listOrders.asReversed().take(3), ::onClickOrders)
+            adapter = OrdersAdapter(listOrders.sortedByDescending { it.id }.take(3), ::onClickOrders)
         }
     }
 
@@ -150,7 +150,7 @@ class HomeFragment : Fragment() {
 
     private fun initListProduct(listOProducts: MutableList<ProductModel>) {
         binding?.includeAdmin?.recyclerProducts?.apply {
-            val mAdapter = ProductAdapter(listOProducts.asReversed().take(3), ::onCLickProduct)
+            val mAdapter = ProductAdapter(listOProducts.sortedByDescending { it.id }.take(3), ::onCLickProduct)
             adapter = mAdapter
         }
     }
@@ -187,7 +187,7 @@ class HomeFragment : Fragment() {
 
     private fun calculateTotalValue(): Double {
         return listOrders
-            .filter { it.monthName == dateModel.monthName }
+            .filter { it.monthName == dateModel.monthName && it.status == Constants.STATUS_FINISH }
             .sumByDouble { it.totalValue ?: 0.0 }
     }
 
@@ -206,7 +206,7 @@ class HomeFragment : Fragment() {
 
         val existingProduct = updatedItems.find { it.id == productModel.id }
         if (existingProduct != null) {
-            existingProduct.amount = productModel.amount?.let { existingProduct.amount?.plus(it) }
+            existingProduct.amountBuy = productModel.amountBuy?.let { existingProduct.amountBuy?.plus(it) }
             existingProduct.totalPrice = productModel.totalPrice?.let { existingProduct.totalPrice?.plus(it) }
         } else {
             updatedItems.add(productModel)

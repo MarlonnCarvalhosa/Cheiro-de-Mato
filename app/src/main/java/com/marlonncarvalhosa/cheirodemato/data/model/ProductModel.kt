@@ -8,6 +8,7 @@ data class ProductModel(
     val type: String? = "",
     var amount: Int? = 0,
     var amountInitStock: Int? = 0,
+    var amountBuy: Int? = 0,
     var totalPrice: Double? = 0.0,
     var price: Double? = 0.0,
     val dia: String? = "",

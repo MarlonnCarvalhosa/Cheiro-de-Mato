@@ -3,6 +3,7 @@ package com.marlonncarvalhosa.cheirodemato.view.order
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
@@ -10,6 +11,7 @@ import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemProductCartBinding
 import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
+import com.marlonncarvalhosa.cheirodemato.util.toKilograms
 
 class ItemsCartAdapter(
     private val data: List<ProductModel>,
@@ -23,7 +25,6 @@ class ItemsCartAdapter(
             item.let {
                 if (order?.status == Constants.STATUS_FINISH) binding.btnTrash.visibility = View.GONE
                 binding.textProductName.text = it.name
-                binding.textAmount.text = it.amount.toString()
                 binding.textPrice.text = it.totalPrice?.formatAsCurrency()
             }
         }
@@ -38,6 +39,11 @@ class ItemsCartAdapter(
         holder.bind(data[position])
         holder.itemView.findViewById<View>(R.id.btn_trash).setOnClickListener {
             onClickListener(data[position])
+        }
+        if (data[position].type == Constants.WEIGHT) {
+            holder.itemView.findViewById<AppCompatTextView>(R.id.text_amount).text = "${data[position].amountBuy?.toKilograms()} Kg"
+        } else {
+            holder.itemView.findViewById<AppCompatTextView>(R.id.text_amount).text = "${data[position].amountBuy} Unidades"
         }
     }
 

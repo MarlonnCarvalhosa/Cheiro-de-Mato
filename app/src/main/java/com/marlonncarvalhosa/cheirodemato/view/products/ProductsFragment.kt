@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentProductsBinding
 import com.marlonncarvalhosa.cheirodemato.util.ProductDialogCommand
 import com.marlonncarvalhosa.cheirodemato.util.removeAccents
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import com.marlonncarvalhosa.cheirodemato.view.home.HomeFragmentDirections
+import com.marlonncarvalhosa.cheirodemato.view.main.MainActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ProductsFragment : Fragment() {
@@ -34,6 +36,7 @@ class ProductsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).setColorStatusBar(R.color.white)
         viewModel.getProducts()
         observerProduct()
         observerProductDialogCommand()
@@ -95,7 +98,7 @@ class ProductsFragment : Fragment() {
 
     private fun initListProducts(listProduct: MutableList<ProductModel>) {
         binding?.recyclerProducts?.apply {
-            adapter = ProductAdapter(listProduct.asReversed(), ::onClickProduct)
+            adapter = ProductAdapter(listProduct.sortedByDescending { it.id }, ::onClickProduct)
         }
     }
 

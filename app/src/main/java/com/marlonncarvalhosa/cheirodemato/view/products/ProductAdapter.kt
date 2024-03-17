@@ -10,6 +10,7 @@ import com.google.android.material.card.MaterialCardView
 import com.marlonncarvalhosa.cheirodemato.R
 import com.marlonncarvalhosa.cheirodemato.data.model.ProductModel
 import com.marlonncarvalhosa.cheirodemato.databinding.ItemProductBinding
+import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.calculatePercentageStock
 import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.util.toKilograms
@@ -24,7 +25,6 @@ class ProductAdapter(
             item.let {
                 binding.textProductName.text = it.name
                 binding.textPrice.text = it.price?.formatAsCurrency()
-                binding.textAmount.text = "${it.amountInitStock?.toKilograms()} Kg"
             }
         }
     }
@@ -39,9 +39,15 @@ class ProductAdapter(
         val amount = data[position].amount
         val amountInitStock = data[position].amountInitStock
         val color = calculatePercentageStock(amount, amountInitStock)
-        holder.itemView.findViewById<AppCompatTextView>(R.id.text_layout_percentage).text = "Estoque atual: ${amount?.toKilograms()} Kg"
         holder.itemView.findViewById<View>(R.id.view2).backgroundTintList = ContextCompat.getColorStateList(holder.itemView.context, color)
         holder.itemView.findViewById<MaterialCardView>(R.id.card).setOnClickListener { onClickListener(data[position]) }
+        if (data[position].type == Constants.WEIGHT) {
+            holder.itemView.findViewById<AppCompatTextView>(R.id.text_amount).text = "${amountInitStock?.toKilograms()} Kg"
+            holder.itemView.findViewById<AppCompatTextView>(R.id.text_layout_percentage).text = "Estoque atual: ${amount?.toKilograms()} Kg"
+        } else {
+            holder.itemView.findViewById<AppCompatTextView>(R.id.text_amount).text = "$amountInitStock Unidades"
+            holder.itemView.findViewById<AppCompatTextView>(R.id.text_layout_percentage).text = "Estoque atual: $amount Unidades"
+        }
     }
 
     override fun getItemCount(): Int = data.size

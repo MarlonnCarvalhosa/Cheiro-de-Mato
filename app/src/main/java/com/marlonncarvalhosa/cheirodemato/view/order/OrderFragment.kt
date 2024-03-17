@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.marlonncarvalhosa.cheirodemato.data.model.OrderModel
 import com.marlonncarvalhosa.cheirodemato.databinding.FragmentOrderBinding
+import com.marlonncarvalhosa.cheirodemato.util.Constants
 import com.marlonncarvalhosa.cheirodemato.util.formatAsCurrency
 import com.marlonncarvalhosa.cheirodemato.util.showSnackbarRed
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -64,7 +65,9 @@ class OrderFragment : Fragment() {
     }
 
     private fun setupLayout(list: MutableList<OrderModel>) {
-        binding?.textValue?.text = list.sumByDouble { it.totalValue }.formatAsCurrency()
+        binding?.textValue?.text = list
+            .filter { it.status == Constants.STATUS_FINISH }
+            .sumByDouble { it.totalValue }.formatAsCurrency()
     }
 
     private fun initListOrdersByMonth(
@@ -72,8 +75,12 @@ class OrderFragment : Fragment() {
         listOrders: MutableList<OrderModel>
     ) {
         binding?.recyclerMonth?.apply {
-            adapter = MonthAdapter(list.distinct().asReversed(), listOrders.asReversed())
+            adapter = MonthAdapter(list.distinct().asReversed(), listOrders.sortedByDescending { it.id }, ::onClickOrder)
         }
+    }
+
+    private fun onClickOrder(orderModel: OrderModel) {
+        findNavController().navigate(OrderFragmentDirections.actionOrderFragmentToOrderDetailFragment(orderModel))
     }
 
     override fun onDestroyView() {

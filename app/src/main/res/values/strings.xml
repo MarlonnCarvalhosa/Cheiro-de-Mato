@@ -9,7 +9,10 @@
     <string name="error_empty_type">Tipo inválido.</string>
     <string name="error_empty_price">Preço inválido.</string>
     <string name="error_empty_amount">Quantidade inválida.</string>
+    <string name="error_full_stock">Quantidade excede o estoque: %s</string>
+    <string name="error_zero">Quantidade deve ser maior que zero</string>
 
     <string name="text_products">Produtos</string>
     <string name="text_login_button">Entrar</string>
+    <string name="text_finish_button">Finalizar</string>
 </resources>
